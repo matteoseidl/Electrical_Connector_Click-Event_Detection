@@ -41,7 +41,7 @@ command to run if program contains helper info
 
 Contributors names and contact info
 
-ex. Máté Gábor Seidl  
+Máté Gábor Seidl  
 
 ## Version History
 
