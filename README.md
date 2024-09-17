@@ -8,7 +8,7 @@ This repository contains the software components developed in the above mentione
 
 ## Description
 
-test2
+test
 
 ## Getting Started
 
