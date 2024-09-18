@@ -4,6 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="_04_Click_Detection_App.MainWindow"
-        Title="_04_Click_Detection_App">
-    Welcome to Avalonia!
+        Title="ClickSense">
+
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <TextBox x:Name="outputTextBox" Width="300" Height="30" Margin="0,0,0,20"/>
+        <Button Content="Button" Width="100" Height="30" Click="OnButtonClick"/>
+    </StackPanel>
+
 </Window>
