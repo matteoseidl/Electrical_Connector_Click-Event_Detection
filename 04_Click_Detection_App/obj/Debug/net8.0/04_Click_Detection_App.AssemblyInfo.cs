@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("04_Click_Detection_App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7a8e9fd3bc247257d0c7a751cdbbef92b66d8e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a45f00e790963b867c78d581f8d481b6509b2c3")]
 [assembly: System.Reflection.AssemblyProductAttribute("04_Click_Detection_App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("04_Click_Detection_App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
