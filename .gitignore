@@ -1,8 +1,8 @@
 #exclude artifacts
 
 # .NET build artifacts
-bin/
-obj/
+04_Click_Detection_App/bin/
+04_Click_Detection_App/obj/
 
 # VS Code settings and logs
 .vscode/
