@@ -1,0 +1,23 @@
+#exclude artifacts
+
+# .NET build artifacts
+bin/
+obj/
+
+# VS Code settings and logs
+.vscode/
+*.code-workspace
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/extensions.json
+
+# User-specific files
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Other IDE-specific files
+.idea/
