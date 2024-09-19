@@ -21,3 +21,7 @@
 
 # Other IDE-specific files
 .idea/
+
+
+.DS_Store
+04_Click_Detection_App/.DS_Store
