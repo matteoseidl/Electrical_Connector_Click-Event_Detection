@@ -25,3 +25,8 @@
 
 .DS_Store
 04_Click_Detection_App/.DS_Store
+
+05_Click_Detection_python/venv/bin
+05_Click_Detection_python/venv/lib
+05_Click_Detection_python/venv/include
+05_Click_Detection_python/venv/pyvenv.cfg

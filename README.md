@@ -1,6 +1,6 @@
 # Project Description
 
-This repository contains the software components developed as part of the master's thesis titled "Quality Control in Robotic Peg-in-Hole Assembly Through Deep Learning-Based Acoustic Event Detection", authored by B.Sc. Máté Gábor Seidl for obtaining the academic degree Master of Science (M.Sc.) at the TUM School of Engineering and Design of the Technical University of Munich.
+This repository contains the software components developed as part of the master's thesis titled "Quality Control in Robotic Peg-in-Hole Assembly Using Acoustic Event Detection", authored by B.Sc. Máté Gábor Seidl for obtaining the academic degree Master of Science (M.Sc.) at the TUM School of Engineering and Design of the Technical University of Munich.
 
 The thesis was supervised by M.Sc. Celina Dettmering from the Institute for Machine Tools and Industrial Management (iwb) of the Technical University of Munich.
 
