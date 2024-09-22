@@ -1,0 +1,4 @@
+- PortAudio
+- pyaudio
+- numpy
+- matplotlib
