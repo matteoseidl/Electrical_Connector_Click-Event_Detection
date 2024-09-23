@@ -3,8 +3,8 @@ import numpy as np
 import signal
 import sys
 import threading
-import time
-from visulizeAudioInputAmplitude import AudioAmplitudePlotter 
+from visualizeAudioInputAmplitude import AudioAmplitudePlotter
+from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
 
 # Constants
 sampling_rate_orig = 48000
@@ -18,7 +18,7 @@ class ClickSense:
         self.sampling_rate_downsampled = int(sampling_rate_orig/3) # 16000
         self.stream = self.p.open(format=format, channels=channels, rate=self.sampling_rate_downsampled, input=True, frames_per_buffer=self.chunk)
         self.recording = False
-        self.amplitude = 0.0
+        self.mic_input = 0.0
         self.lock = threading.Lock()
         self.audio_data = None
 
@@ -29,18 +29,18 @@ class ClickSense:
             data = self.stream.read(self.chunk)
             audio_data = np.frombuffer(data, dtype=np.int16)
             #amplitude = np.linalg.norm(audio_data) / len(audio_data)
-            amplitude = audio_data
+            mic_input = audio_data
             
             with self.lock:
-                self.amplitude = amplitude
+                self.mic_input = mic_input
                 self.audio_data = audio_data
             
             #time.sleep(0.0001)  
 
-    def get_amplitude(self):
+    def get_mic_input(self):
         with self.lock:
             #return self.audio_data
-            return self.amplitude
+            return self.mic_input
 
     def stop_recording(self):
         self.recording = False
@@ -62,5 +62,6 @@ if __name__ == '__main__':
     recording_thread.start()
 
     audio_plotter = AudioAmplitudePlotter(click_sense)
+    #spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
 
     recording_thread.join()
