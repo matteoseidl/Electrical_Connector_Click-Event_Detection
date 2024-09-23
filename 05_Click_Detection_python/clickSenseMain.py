@@ -9,12 +9,13 @@ from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
 # Constants
 sampling_rate_orig = 48000
 channels = 1
-format = pyaudio.paInt16
+#format = pyaudio.paInt16
+format = pyaudio.paFloat32 # for librosa audio data must be floating-point
 
 class ClickSense:
     def __init__(self):
         self.p = pyaudio.PyAudio()
-        self.chunk = 1024
+        self.chunk = 2048
         self.sampling_rate_downsampled = int(sampling_rate_orig/3) # 16000
         self.stream = self.p.open(format=format, channels=channels, rate=self.sampling_rate_downsampled, input=True, frames_per_buffer=self.chunk)
         self.recording = False
@@ -27,7 +28,7 @@ class ClickSense:
         
         while self.recording:
             data = self.stream.read(self.chunk)
-            audio_data = np.frombuffer(data, dtype=np.int16)
+            audio_data = np.frombuffer(data, dtype=np.float32)
             #amplitude = np.linalg.norm(audio_data) / len(audio_data)
             mic_input = audio_data
             

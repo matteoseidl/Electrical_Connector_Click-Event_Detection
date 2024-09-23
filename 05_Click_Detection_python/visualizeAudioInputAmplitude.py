@@ -4,12 +4,16 @@ import numpy as np
 import time
 
 # full range of int16 (https://learn.microsoft.com/en-us/dotnet/api/system.int16?view=net-8.0)
-y_lim = 32768
+#y_lim = 32768 # max value for paInt16
+
+# max value for paFloat32
+y_lim = 1.0
 
 class AudioAmplitudePlotter:
     def __init__(self, click_sense):
         self.click_sense = click_sense
         self.chunk_freq = 1/click_sense.sampling_rate_downsampled * click_sense.chunk
+        self.plot_update_freq = self.chunk_freq*1000 # in milliseconds
 
         self.time_old = None
         self.time_new = None
@@ -21,7 +25,7 @@ class AudioAmplitudePlotter:
         self.ax.set_ylim(-y_lim, y_lim)
         self.ax.set_xlim(0, x_lim)
         self.fig.canvas.mpl_connect('close_event', self.handle_close)
-        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.chunk_freq)
+        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True)
         plt.show()
 
     def update(self, frame):
