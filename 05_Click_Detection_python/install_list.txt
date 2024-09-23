@@ -2,3 +2,6 @@
 - pyaudio
 - numpy
 - matplotlib
+- librosa
+
+- python3 virtual env
