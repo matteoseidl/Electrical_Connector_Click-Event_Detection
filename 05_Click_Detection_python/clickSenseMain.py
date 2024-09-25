@@ -7,9 +7,7 @@ from visualizeAudioInputAmplitude import AudioAmplitudePlotter
 from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
 import time
 
-#constant variables
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
-
 channels = 1
 #format = pyaudio.paInt16
 format = pyaudio.paFloat32 # for librosa audio data must be floating-point
@@ -25,7 +23,7 @@ class ClickSense:
         self.lock = threading.Lock()
         self.audio_data = None
 
-        self.chunks_per_plot = 8
+        self.chunks_per_plot = 16
         self.mic_input_spec = np.zeros(self.chunk * self.chunks_per_plot) # initialize mic_input buffer with zeros for spectrogram plot
 
         self.time_old = None

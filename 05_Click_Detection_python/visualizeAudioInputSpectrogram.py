@@ -15,7 +15,7 @@ class AudioSpectrogramPlotter:
 
         self.chunk_freq = click_sense.chunk/click_sense.sampling_rate_downsampled # in case of a chunk size of 2048 and sampling rate 16 kHz: 2048/16000 = 0.128 s, meaning that 0.128 s corresponds to one chunk
         self.chunks_per_plot = click_sense.chunks_per_plot # number of chunks to plot
-        self.plot_update_freq = self.chunk_freq * 1000 * self.chunks_per_plot # in case of 8 chunks: 8 * 0.128 = 1.024 s, multiplication with 1000 to convert to milliseconds
+        self.plot_update_freq = self.chunk_freq * 1000 #* self.chunks_per_plot # in case of 8 chunks: 8 * 0.128 = 1.024 s, multiplication with 1000 to convert to milliseconds
 
         self.fig, self.ax = plt.subplots(1, 1, figsize=(12, 6))
         self.fig.canvas.manager.set_window_title('clickSense - Spectrogram Plotter')
@@ -29,7 +29,13 @@ class AudioSpectrogramPlotter:
         self.samples_per_plot = int((click_sense.chunk * click_sense.chunks_per_plot))
 
         #initialize spectrogram with zeros
-        #self.spectrogram = np.zeros((128, int(self.plot_update_freq/self.resolution)))
+        self.init_spec = np.zeros((128, int((self.chunks_per_plot*click_sense.chunk)/self.hop_length) + 1))
+        print(f"init_spec shape: {self.init_spec.shape}")
+
+        self.melspec_dB_img = librosa.display.specshow(self.init_spec, x_axis='time', y_axis='mel', ax=self.ax)
+
+        self.colorbar = self.fig.colorbar(self.melspec_dB_img, ax=self.ax, format="%+2.0f dB")
+        self.ax.set(title='Mel Spectrogram')
 
         # initialize mic_input buffer with zeros
         self.mic_buffer = np.zeros(click_sense.chunk * self.chunks_per_plot )
@@ -56,19 +62,16 @@ class AudioSpectrogramPlotter:
         melspec  = librosa.feature.melspectrogram(y=mic_input, sr=self.sr, n_fft=self.n_fft, hop_length=self.hop_length)
         #print(f"melspec shape: {melspec.shape}")
 
-        self.melspec_dB = librosa.power_to_db(melspec, ref=np.max)
+        #self.melspec_dB = librosa.power_to_db(melspec, ref=np.max)
+        self.melspec_dB = librosa.power_to_db(melspec, ref=1.0, amin=1e-10, top_db=80.0)
 
-        #print(f"melspec_dB shape: {melspec_dB.shape}")
-        #print(f"melspec_dB max: {np.min(self.melspec_dB)}")
+        self.melspec_dB_img.set_array(self.melspec_dB)
+        self.melspec_dB_img.autoscale()
 
-        self.ax.clear()
-        
-        librosa.display.specshow(self.melspec_dB, x_axis='time', y_axis='mel', ax=self.ax)
-        #librosa.display.specshow(melspec, x_axis='time', y_axis='mel', ax=self.ax)
+        print(f"melspec_dB shape: {self.melspec_dB.shape}")
+        print(f"melspec_dB min, max: {np.min(self.melspec_dB), np.max(self.melspec_dB)}")
 
-        self.ax.set(title='Mel Spectrogram')
-
-        return self.ax.images
+        return self.melspec_dB_img,
 
     def handle_close(self, event):
         print("Closing plot window. Stopping recording...")
