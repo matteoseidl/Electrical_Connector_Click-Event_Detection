@@ -5,8 +5,11 @@ import math
 import time
 from matplotlib.colors import LogNorm
 from scipy import signal
+import librosa
 
 # https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py
+# https://librosa.org/doc/main/generated/librosa.power_to_db.html
+# https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db
 
 
 class AudioSpectrogramPlotter2:
@@ -25,32 +28,42 @@ class AudioSpectrogramPlotter2:
         self.resolution = 0.032 # in seconds, resulting in 32 frames for the 1.024 s plot duration
         self.hop_length = int(self.resolution * click_sense.sampling_rate_downsampled) # hop_length is the number of samples between successive frames, 0.032s * 16000 1/s = 512 samples
         self.n_fft = self.next_power_of_2(self.hop_length) # n_fft is the number of samples in each window, 512 samples, next power of 2 is 1024
+        #self.n_fft = 2048
 
         self.samples_per_plot = int((click_sense.chunk * self.chunks_per_plot))
 
-        #initialize spectrogram with zeros
-        #self.init_spec = np.zeros((128, int(self.samples_per_plot/self.hop_length)))
+        self.mic_buffer = np.zeros(self.samples_per_plot)
 
-        self.init_audio = np.zeros(self.samples_per_plot)
+        self.mel_filter = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=128)
 
-         # initialize mic_input buffer with zeros
-        self.mic_buffer = self.init_audio
-
-        self.frequencies, self.times, self.Sxx = signal.spectrogram(self.init_audio, self.sr)
-        self.ax.pcolormesh(self.times, self.frequencies, 10 * np.log10(self.Sxx), shading='auto', cmap='inferno')
-
+        self.mel_spec_buffer = np.zeros((128, int(self.samples_per_plot / self.hop_length)))
+        
+        self.mel_spec_img = self.ax.pcolormesh(np.linspace(0, self.samples_per_plot / self.sr, self.mel_spec_buffer.shape[1]),
+                                               np.linspace(0, self.sr // 2, 128), 
+                                               self.mel_spec_buffer, shading='auto', cmap='inferno')
+        
         self.ax.set_ylabel('Frequency [Hz]')
         self.ax.set_xlabel('Time [s]')
-
-        #self.colorbar = self.fig.colorbar(self.melspec_dB_img, ax=self.ax, format="%+2.0f dB")
         self.ax.set(title='Mel Spectrogram')
 
-        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True) # interval in milliseconds
-
+        # Create the animation object
+        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True)
         plt.show()
 
     def next_power_of_2(self, x):
         return 2**(math.ceil(math.log(x, 2)))
+    
+    def power_to_db(self, Sxx, ref, amin, top_db):
+    
+        """Sxx_dB = 10 * np.log10(np.maximum(Sxx, amin)) 
+        Sxx_dB -= 10 * np.log10(ref)
+        Sxx_dB = np.maximum(Sxx_dB, Sxx_dB.max() - top_db)"""
+
+        Sxx_dB = 10 * np.log10((np.maximum(Sxx, amin))/ref)
+        Sxx_dB = np.maximum(Sxx_dB, Sxx_dB.max() - top_db)
+        
+        return Sxx_dB
+
 
     def update(self, frame):
         #mic_input = self.click_sense.get_mic_input_spec()
@@ -59,16 +72,45 @@ class AudioSpectrogramPlotter2:
         if mic_input is None:
             mic_input = np.zeros(self.click_sense.chunk)
 
+        # Update mic buffer by rolling left and adding new mic input at the end
         mic_input = np.array(mic_input)
-        self.mic_buffer = np.roll(self.mic_buffer, -mic_input.shape[0], axis=0)
-        self.mic_buffer[-mic_input.shape[0]:] = mic_input
 
-        #print(f"mic_input shape: {mic_input.shape}")
+        #self.mic_buffer = np.roll(self.mic_buffer, -mic_input.shape[0], axis=0)
+        #self.mic_buffer[-mic_input.shape[0]:] = mic_input
 
-        self.frequencies, self.times, self.Sxx = signal.spectrogram(self.mic_buffer, self.sr)
-        self.spec = self.ax.pcolormesh(self.times, self.frequencies, 10 * np.log10(self.Sxx), shading='auto', cmap='inferno')
+        # Compute the spectrogram for only the new chunk of data
+        frequencies, times, Sxx = signal.spectrogram(mic_input, self.sr, nperseg=self.n_fft, noverlap=self.hop_length // 2)
         
-        return self.spec,
+        mel_spec_chunk = np.dot(self.mel_filter, Sxx)
+
+        # melspec_chunk  = librosa.feature.melspectrogram(y=mic_input, sr=self.sr, n_fft=self.n_fft, hop_length=self.hop_length)
+
+        #mel_spec_chunk_dB = 10 * np.log10(np.maximum(mel_spec_chunk, 1e-10))
+        mel_spec_chunk_dB = self.power_to_db(mel_spec_chunk, ref=1.0, amin=1e-10, top_db=80.0)
+
+        #mel_spec_chunk_dB = librosa.power_to_db(melspec_chunk, ref=1.0, amin=1e-10, top_db=80.0)
+
+        #avarage value of the last chunk from the mel_spec_buffer
+        spec_last_chunk_avg_t = np.mean(self.mel_spec_buffer[:, -2*mel_spec_chunk_dB.shape[1]:])
+        
+
+        self.mel_spec_buffer = np.roll(self.mel_spec_buffer, -mel_spec_chunk_dB.shape[1], axis=1)
+        self.mel_spec_buffer[:, -mel_spec_chunk_dB.shape[1]:] = mel_spec_chunk_dB
+        print(f"melspec_dB shape: {self.mel_spec_buffer.shape}")
+
+        spec_last_chunk_avg_t_minus_1 = np.mean(self.mel_spec_buffer[:, -(3*(mel_spec_chunk_dB.shape[1])):-mel_spec_chunk_dB.shape[1]])
+        #spec_last_chunk_avg_t_minus_1 = np.mean(self.mel_spec_buffer[:, -mel_spec_chunk_dB.shape[1]:])
+
+        if spec_last_chunk_avg_t_minus_1 == spec_last_chunk_avg_t:
+            print("Old values remain the same")
+        else:
+            print("old values changed")
+
+        # Update the pcolormesh plot with the new mel spectrogram
+        self.mel_spec_img.set_array(self.mel_spec_buffer.ravel())
+        self.mel_spec_img.set_clim(vmin=np.min(self.mel_spec_buffer), vmax=np.max(self.mel_spec_buffer))
+
+        return self.mel_spec_img,
 
     def handle_close(self, event):
         print("Closing plot window. Stopping recording...")

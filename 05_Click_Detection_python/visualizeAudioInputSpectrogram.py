@@ -74,8 +74,18 @@ class AudioSpectrogramPlotter:
         #self.melspec_dB = librosa.power_to_db(melspec, ref=np.max)
         self.melspec_dB = librosa.power_to_db(melspec, ref=1.0, amin=1e-10, top_db=80.0)
 
+        #avarage value of the last chunk from the mel_spec_buffer
+        spec_last_chunk_avg_t = np.mean(self.full_spectrogram[:, -self.melspec_dB.shape[1]:])
+
         self.full_spectrogram = np.roll(self.full_spectrogram, -self.melspec_dB.shape[1], axis=1)
         self.full_spectrogram[:, -self.melspec_dB.shape[1]:] = self.melspec_dB
+
+        spec_last_chunk_avg_t_minus_1 = np.mean(self.full_spectrogram[:, -(2*(self.melspec_dB.shape[1])):-self.melspec_dB.shape[1]])
+
+        if spec_last_chunk_avg_t_minus_1 == spec_last_chunk_avg_t:
+            print("Old values remain the same")
+        else:
+            print("old values changed")
 
         #self.melspec_dB_img.set_array(self.melspec_dB)
         #self.melspec_dB_img.set_array(self.full_spectrogram)
