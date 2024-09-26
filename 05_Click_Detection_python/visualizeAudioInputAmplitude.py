@@ -12,7 +12,7 @@ class AudioAmplitudePlotter:
 
         self.chunk_freq = click_sense.chunk/click_sense.sampling_rate_downsampled
         chunks_to_plot = 8
-        self.plot_update_freq = self.chunk_freq * chunks_to_plot * 1000 # in milliseconds
+        self.plot_update_freq = self.chunk_freq * 1000 # update plot for every new chunk
 
         self.time_old = None
         self.time_new = None

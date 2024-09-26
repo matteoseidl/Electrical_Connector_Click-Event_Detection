@@ -10,6 +10,8 @@ import librosa
 # https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py
 # https://librosa.org/doc/main/generated/librosa.power_to_db.html
 # https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db
+# https://stackoverflow.com/questions/14267555/find-the-smallest-power-of-2-greater-than-or-equal-to-n-in-python
+
 
 
 class AudioSpectrogramPlotter2:
@@ -37,7 +39,16 @@ class AudioSpectrogramPlotter2:
         self.mel_filter = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=128)
 
         self.mel_spec_buffer = np.zeros((128, int(self.samples_per_plot / self.hop_length)))
-        
+
+        mic_input = self.click_sense.get_mic_input()
+        if mic_input is None:
+            mic_input = np.zeros(self.click_sense.chunk)
+        frequencies, times, Sxx = signal.spectrogram(mic_input, self.sr, nperseg=self.n_fft, noverlap=self.hop_length // 2)
+        mel_spec_chunk = np.dot(self.mel_filter, Sxx)
+        mel_spec_chunk_dB = self.power_to_db(mel_spec_chunk, ref=1.0, amin=1e-10, top_db=120.0)
+        self.mel_spec_buffer = np.roll(self.mel_spec_buffer, -mel_spec_chunk_dB.shape[1], axis=1)
+        self.mel_spec_buffer[:, -mel_spec_chunk_dB.shape[1]:] = mel_spec_chunk_dB
+
         self.mel_spec_img = self.ax.pcolormesh(np.linspace(0, self.samples_per_plot / self.sr, self.mel_spec_buffer.shape[1]),
                                                np.linspace(0, self.sr // 2, 128), 
                                                self.mel_spec_buffer, shading='auto', cmap='inferno')
@@ -46,21 +57,30 @@ class AudioSpectrogramPlotter2:
         self.ax.set_xlabel('Time [s]')
         self.ax.set(title='Mel Spectrogram')
 
+        self.top_db = 80
+        self.mel_spec_img.set_clim(vmin=-self.top_db, vmax=0)
+
+        self.colorbar = self.fig.colorbar(self.mel_spec_img, ax=self.ax, format="%+2.0f dB")
+        self.colorbar.set_label("Decibels (dB)")
+
         # Create the animation object
         self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True)
         plt.show()
 
     def next_power_of_2(self, x):
-        return 2**(math.ceil(math.log(x, 2)))
+        next_power_of_two = 2**(math.ceil(math.log(x, 2)))
+
+        if next_power_of_two == x:
+            next_power_of_two = next_power_of_two*2
+
+        return next_power_of_two
     
     def power_to_db(self, Sxx, ref, amin, top_db):
     
-        """Sxx_dB = 10 * np.log10(np.maximum(Sxx, amin)) 
-        Sxx_dB -= 10 * np.log10(ref)
-        Sxx_dB = np.maximum(Sxx_dB, Sxx_dB.max() - top_db)"""
-
-        Sxx_dB = 10 * np.log10((np.maximum(Sxx, amin))/ref)
-        Sxx_dB = np.maximum(Sxx_dB, Sxx_dB.max() - top_db)
+        Sxx_dB = 10 * np.log10(np.maximum(Sxx, amin)) 
+        #Sxx_dB -= 10 * np.log10(ref)
+        print(f" Sxx_dB max: {Sxx_dB.max()}")
+        #Sxx_dB_clipped = np.maximum(Sxx_dB, Sxx_dB.max() - top_db)
         
         return Sxx_dB
 
@@ -86,7 +106,10 @@ class AudioSpectrogramPlotter2:
         # melspec_chunk  = librosa.feature.melspectrogram(y=mic_input, sr=self.sr, n_fft=self.n_fft, hop_length=self.hop_length)
 
         #mel_spec_chunk_dB = 10 * np.log10(np.maximum(mel_spec_chunk, 1e-10))
-        mel_spec_chunk_dB = self.power_to_db(mel_spec_chunk, ref=1.0, amin=1e-10, top_db=80.0)
+        mel_spec_chunk_dB = self.power_to_db(mel_spec_chunk, ref=1.0, amin=1e-10, top_db=self.top_db)
+
+        print(f" mel_spec_chunk_dB max: {mel_spec_chunk_dB.max()}")
+        print(f" mel_spec_chunk_dB min: {mel_spec_chunk_dB.min()}")
 
         #mel_spec_chunk_dB = librosa.power_to_db(melspec_chunk, ref=1.0, amin=1e-10, top_db=80.0)
 
@@ -109,6 +132,11 @@ class AudioSpectrogramPlotter2:
         # Update the pcolormesh plot with the new mel spectrogram
         self.mel_spec_img.set_array(self.mel_spec_buffer.ravel())
         self.mel_spec_img.set_clim(vmin=np.min(self.mel_spec_buffer), vmax=np.max(self.mel_spec_buffer))
+        #self.mel_spec_img.set_clim(vmin=np.min(mel_spec_chunk_dB), vmax=np.max(mel_spec_chunk_dB))
+
+        # print hop length and n_fft
+        print(f"hop_length: {self.hop_length}")
+        print(f"n_fft: {self.n_fft}")
 
         return self.mel_spec_img,
 
