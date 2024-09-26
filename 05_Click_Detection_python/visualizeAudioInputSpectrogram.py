@@ -3,6 +3,7 @@ import matplotlib.animation as animation
 import numpy as np
 import librosa
 import math
+import time
 
 # https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
 # https://librosa.org/doc/main/generated/librosa.power_to_db.html
@@ -30,15 +31,21 @@ class AudioSpectrogramPlotter:
 
         #initialize spectrogram with zeros
         self.init_spec = np.zeros((128, int((self.chunks_per_plot*click_sense.chunk)/self.hop_length) + 1))
-        print(f"init_spec shape: {self.init_spec.shape}")
+        #print(f"init_spec shape: {self.init_spec.shape}")
 
         self.melspec_dB_img = librosa.display.specshow(self.init_spec, x_axis='time', y_axis='mel', ax=self.ax)
 
-        self.colorbar = self.fig.colorbar(self.melspec_dB_img, ax=self.ax, format="%+2.0f dB")
+        #self.colorbar = self.fig.colorbar(self.melspec_dB_img, ax=self.ax, format="%+2.0f dB")
         self.ax.set(title='Mel Spectrogram')
 
         # initialize mic_input buffer with zeros
-        self.mic_buffer = np.zeros(click_sense.chunk * self.chunks_per_plot )
+        self.mic_buffer = np.zeros(click_sense.chunk * self.chunks_per_plot)
+
+        self.full_spectrogram = np.zeros((128, int((self.chunks_per_plot * click_sense.chunk) / self.hop_length) + 1))
+
+        """self.full_spectrogram = np.zeros((128, int((self.chunks_per_plot * click_sense.chunk) / self.hop_length)))
+        self.melspec_dB_img = self.ax.imshow(self.full_spectrogram, aspect='auto', origin='lower', cmap='viridis',
+                                             extent=[0, self.full_spectrogram.shape[1], 0, 128])"""
 
         self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True) # interval in milliseconds
 
@@ -48,7 +55,9 @@ class AudioSpectrogramPlotter:
         return 2**(math.ceil(math.log(x, 2)))
 
     def update(self, frame):
-        mic_input = self.click_sense.get_mic_input_spec()
+        #mic_input = self.click_sense.get_mic_input_spec()
+        mic_input = self.click_sense.get_mic_input()
+        
         if mic_input is None:
             mic_input = np.zeros(self.click_sense.chunk * self.chunks_per_plot)
 
@@ -57,21 +66,30 @@ class AudioSpectrogramPlotter:
         self.mic_buffer = np.roll(self.mic_buffer, -mic_input.shape[0], axis=0)
         self.mic_buffer[-mic_input.shape[0]:] = mic_input"""
 
-        print(f"mic_input shape: {mic_input.shape}")
+        #print(f"mic_input shape: {mic_input.shape}")
 
         melspec  = librosa.feature.melspectrogram(y=mic_input, sr=self.sr, n_fft=self.n_fft, hop_length=self.hop_length)
         #print(f"melspec shape: {melspec.shape}")
-
+        
         #self.melspec_dB = librosa.power_to_db(melspec, ref=np.max)
         self.melspec_dB = librosa.power_to_db(melspec, ref=1.0, amin=1e-10, top_db=80.0)
 
-        self.melspec_dB_img.set_array(self.melspec_dB)
-        self.melspec_dB_img.autoscale()
+        self.full_spectrogram = np.roll(self.full_spectrogram, -self.melspec_dB.shape[1], axis=1)
+        self.full_spectrogram[:, -self.melspec_dB.shape[1]:] = self.melspec_dB
 
-        print(f"melspec_dB shape: {self.melspec_dB.shape}")
-        print(f"melspec_dB min, max: {np.min(self.melspec_dB), np.max(self.melspec_dB)}")
+        #self.melspec_dB_img.set_array(self.melspec_dB)
+        #self.melspec_dB_img.set_array(self.full_spectrogram)
+        #self.melspec_dB_img.autoscale()
+
+        #print(f"melspec_dB shape: {self.melspec_dB.shape}")
+        #print(f"melspec_dB min, max: {np.min(self.melspec_dB), np.max(self.melspec_dB)}")
+
+        self.melspec_dB_img = librosa.display.specshow(self.full_spectrogram, x_axis='time', y_axis='mel', ax=self.ax)
+
+        #self.melspec_dB_img.set_data(self.full_spectrogram)
 
         return self.melspec_dB_img,
+        #return self.full_spectrogram,
 
     def handle_close(self, event):
         print("Closing plot window. Stopping recording...")

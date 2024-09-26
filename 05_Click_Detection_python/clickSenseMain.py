@@ -5,6 +5,7 @@ import sys
 import threading
 from visualizeAudioInputAmplitude import AudioAmplitudePlotter
 from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
+from visualizeAudioInputSpectrogram_2 import AudioSpectrogramPlotter2
 import time
 
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
@@ -61,7 +62,7 @@ class ClickSense:
 
             if self.time_old is not None:
                 time_diff = self.time_new - self.time_old
-                print(f"Time difference: {time_diff} seconds")
+                #print(f"Time difference: {time_diff} seconds")
 
             self.time_old = self.time_new
 
@@ -87,6 +88,7 @@ if __name__ == '__main__':
     audio_chapture_thread.start()
 
     #audio_plotter = AudioAmplitudePlotter(click_sense)
-    spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
+    #spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
+    spectrogram_plotter = AudioSpectrogramPlotter2(click_sense)
 
     audio_chapture_thread.join()
