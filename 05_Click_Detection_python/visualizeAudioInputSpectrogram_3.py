@@ -1,93 +1,121 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import librosa
 import math
 import time
-from matplotlib.colors import LogNorm
 from scipy import signal
-import librosa
-from matplotlib.mlab import window_hanning,specgram
 
-# https://github.com/ayared/Live-Specgram/blob/master/run_specgram.py
+# https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
+# https://librosa.org/doc/main/generated/librosa.power_to_db.html
+# https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb
+# https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0
+# https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html
+# https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
+
 
 
 class AudioSpectrogramPlotter3:
     def __init__(self, click_sense):
         self.click_sense = click_sense
 
-        self.chunk_freq = click_sense.chunk/click_sense.sampling_rate_downsampled # time for one chunk with the sampling rate, in case of a chunk size of 2048 and sampling rate 16 kHz: 2048/16000 = 0.128 s, meaning that 0.128 s corresponds to one chunk
+        self.chunk_freq = click_sense.chunk/click_sense.sampling_rate_downsampled # in case of a chunk size of 2048 and sampling rate 16 kHz: 2048/16000 = 0.128 s, meaning that 0.128 s corresponds to one chunk
         self.chunks_per_plot = click_sense.chunks_per_plot # number of chunks to plot
-        self.plot_update_freq = self.chunk_freq * 1000 # update the plot for every new chunk
+        self.plot_update_freq = self.chunk_freq * 1000 # plot update frequency in milliseconds, updating for every plot
 
         self.fig, self.ax = plt.subplots(1, 1, figsize=(12, 6))
         self.fig.canvas.manager.set_window_title('clickSense - Spectrogram Plotter')
 
-        self.sr = click_sense.sampling_rate_downsampled # sampling rate of the downsampled audio signal
+        self.sr = click_sense.sampling_rate_downsampled
 
         self.resolution = 0.032 # in seconds, resulting in 32 frames for the 1.024 s plot duration
         self.hop_length = int(self.resolution * click_sense.sampling_rate_downsampled) # hop_length is the number of samples between successive frames, 0.032s * 16000 1/s = 512 samples
         self.n_fft = self.next_power_of_2(self.hop_length) # n_fft is the number of samples in each window, 512 samples, next power of 2 is 1024
-        #self.n_fft = 2048
 
-        self.samples_per_plot = int((click_sense.chunk * self.chunks_per_plot))
+        self.samples_per_plot = int((click_sense.chunk * click_sense.chunks_per_plot))
 
-        self.mic_buffer = np.zeros(self.samples_per_plot)
+        #initialize spectrogram with zeros
+        self.n_mels = 128
+        self.init_spec = np.zeros((self.n_mels, int(self.samples_per_plot / self.hop_length)))
+        #print(f"init_spec shape: {self.init_spec.shape}")
+        self.melspec_full = self.init_spec
 
-        mic_input = self.click_sense.get_mic_input()
+        self.top_dB_abs = 70 # max abs decibel value for the color map
+        self.dB_ref = 1e-12 # ref level
         
-        if mic_input is None:
-            mic_input = np.zeros(self.click_sense.chunk)
-
-        arr2D,freqs,bins = self.get_specgram(mic_input,self.sr)
-
-        extent = (bins[0],bins[-1]*self.chunks_per_plot, freqs[-1],freqs[0])
-        self.im = plt.imshow(arr2D,aspect='auto',extent = extent,interpolation="none",
-                    cmap = 'jet',norm = LogNorm(vmin=.01,vmax=1))
+        self.mel_spec_img = self.ax.pcolormesh(np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
+                                               np.linspace(0, self.sr // 2, self.n_mels), 
+                                               self.init_spec, shading='auto', cmap='inferno')
         
-        self.ax.set_ylabel('Frequency [Hz]')
-        self.ax.set_xlabel('Time [s]')
+        self.mel_spec_img.set_clim(vmin=-self.top_dB_abs, vmax=self.dB_ref)
+
+        self.colorbar = self.fig.colorbar(self.mel_spec_img, ax=self.ax, format="%+2.0f dB")
+        self.colorbar.set_label("Decibels (dB)")
+
+        self.mel_filter = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=128)
+
         self.ax.set(title='Mel Spectrogram')
-        plt.gca().invert_yaxis()
 
-        # Create the animation object
-        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True)
-        
-        try:
-            plt.show()
-        except:
-            print("Plot Closed")
+        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=True) # interval in milliseconds
+
+        plt.show()
 
     def next_power_of_2(self, x):
-        return 2**(math.ceil(math.log(x, 2)))
-    
-    def get_specgram(self, signal, rate):
-        arr2D,freqs,bins = specgram(signal,window=window_hanning,
-                                Fs = rate, NFFT=self.n_fft, noverlap=self.hop_length // 2)
-        return arr2D,freqs,bins
-    
+        next_power_of_two = 2**(math.ceil(math.log(x, 2)))
 
-    def update(self, n):
-        #mic_input = self.click_sense.get_mic_input_spec()
+        if next_power_of_two == x:
+            next_power_of_two = next_power_of_two*2
+
+        return next_power_of_two
+    
+    def power_to_db(self, S_mel, amin, top_db):
+    
+        S_dB = 10 * np.log10(np.maximum(S_mel, amin)) 
+        #Sxx_dB -= 10 * np.log10(ref)
+        # print(f" Sxx_dB max: {Sxx_dB.max()}")
+        S_dB_clipped = np.maximum(S_dB, S_dB.max() - top_db)
+        
+        return S_dB_clipped
+    
+    def update(self, frame):
         mic_input = self.click_sense.get_mic_input()
         
         if mic_input is None:
-            mic_input = np.zeros(self.click_sense.chunk)
+            mic_input = np.zeros(self.click_sense.chunk * self.chunks_per_plot)
 
-        arr2D,freqs,bins = self.get_specgram(mic_input,self.sr)
+        #print(f"mic_input shape: {mic_input.shape}")
 
-        im_data = self.im.get_array()
+        #melspec_chunk  = librosa.feature.melspectrogram(y=mic_input, sr=self.sr, n_fft=self.n_fft, hop_length=self.hop_length)
+        #print(f"melspec shape: {melspec.shape}")
 
-        if n < self.chunks_per_plot:
-            im_data = np.hstack((im_data,arr2D))
-            self.im.set_array(im_data)
-        else:
-            keep_block = arr2D.shape[1]*(self.chunks_per_plot - 1)
-            im_data = np.delete(im_data,np.s_[:-keep_block],1)
-            im_data = np.hstack((im_data,arr2D))
-            self.im.set_array(im_data)
+        chunk_stft = librosa.stft(mic_input, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft)
+        """print(f"chunk_stft shape: {chunk_stft.shape}")
+        print(f"chunk_stft max, min: {chunk_stft.max(), chunk_stft.min()}")"""
 
-        return self.im,
+        #power spectral density
+        S = np.abs(chunk_stft) ** 2
 
+        #mel scale
+        mel_filter_bank = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=self.n_mels, htk=True)
+        S_mel = np.dot(mel_filter_bank, S)
+
+        #first mel scale
+        #chunk_stft_mel = librosa.hz_to_mel(chunk_stft, htk=True)
+
+        """print(f"mel shape: {S_mel.shape}")
+        print(f"S_mel max, min: {S_mel.max(), S_mel.min()}")"""
+
+        #convert to decibels
+        S_dB = self.power_to_db(S_mel, amin=self.dB_ref, top_db=self.top_dB_abs)
+        """print(f"S_dB shape: {S_dB.shape}")
+        print(f"S_dB max, min: {S_dB.max(), S_dB.min()}")"""
+
+        self.melspec_full = np.roll( self.melspec_full, -S_dB.shape[1], axis=1)
+        self.melspec_full[:, -S_dB.shape[1]:] = S_dB
+        self.mel_spec_img.set_array(self.melspec_full.ravel())
+        print(f"mel_spec_img shape: {self.melspec_full.shape}")
+
+        return self.mel_spec_img,
 
     def handle_close(self, event):
         print("Closing plot window. Stopping recording...")

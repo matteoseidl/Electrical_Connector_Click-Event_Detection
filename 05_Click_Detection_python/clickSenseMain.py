@@ -90,6 +90,6 @@ if __name__ == '__main__':
 
     #audio_plotter = AudioAmplitudePlotter(click_sense)
     #spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
-    spectrogram_plotter = AudioSpectrogramPlotter2(click_sense)
+    spectrogram_plotter = AudioSpectrogramPlotter3(click_sense)
 
     audio_chapture_thread.join()
