@@ -23,7 +23,9 @@ class AudioSpectrogramPlotter3:
         self.chunks_per_plot = click_sense.chunks_per_plot # number of chunks to plot
         self.plot_update_freq = self.chunk_freq * 1000 # plot update frequency in milliseconds, updating for every plot
 
-        self.fig, self.ax = plt.subplots(1, 1, figsize=(12, 6))
+        self.fig_x = 12
+        self.fig_y = 6
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(self.fig_x, self.fig_y))
         self.fig.canvas.manager.set_window_title('clickSense - Spectrogram Plotter')
 
         self.sr = click_sense.sampling_rate_downsampled
@@ -94,6 +96,7 @@ class AudioSpectrogramPlotter3:
 
         #power spectral density
         S = np.abs(chunk_stft) ** 2
+        #S = np.abs(chunk_stft)
 
         #mel scale
         mel_filter_bank = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=self.n_mels, htk=True)
