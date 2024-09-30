@@ -9,6 +9,7 @@ from visualizeAudioInputSpectrogram_2 import AudioSpectrogramPlotter2
 from visualizeAudioInputSpectrogram_3 import AudioSpectrogramPlotter3
 import time
 
+
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
 channels = 1
 #format = pyaudio.paInt16
