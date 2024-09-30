@@ -34,7 +34,7 @@ class AudioSpectrogramPlotter3:
         self.sr = click_sense.sampling_rate_downsampled
 
         self.resolution = 0.016 # in seconds, resulting in 32 frames for the 1.024 s plot duration
-        self.hop_length = int(self.resolution * click_sense.sampling_rate_downsampled) # hop_length is the number of samples between successive frames, 0.032s * 16000 1/s = 512 samples
+        self.hop_length = int(self.resolution * click_sense.sampling_rate_downsampled) # hop_length is the number of samples between successive frames, 0.016s * 16000 1/s = 256 samples
         self.n_fft = self.next_power_of_2(self.hop_length) # n_fft is the number of samples in each window, 512 samples, next power of 2 is 1024
 
         self.samples_per_plot = int((self.chunk_size * self.chunks_per_plot))
