@@ -45,7 +45,7 @@ class AudioSpectrogramPlotter3:
         #print(f"init_spec shape: {self.init_spec.shape}")
         self.melspec_full = self.init_spec
 
-        self.top_dB_abs = 80 # max abs decibel value for the color map
+        self.top_dB_abs = 100 # max abs decibel value for the color map
         self.dB_ref = 1e-12 # ref level
         
         self.mel_spec_img = self.ax.pcolormesh(np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
@@ -131,8 +131,6 @@ class AudioSpectrogramPlotter3:
         time_now = time.time()
         time_diff = time_now - self.time_old
         self.time_old = time_now
-
-        
 
         self.melspec_full = np.roll( self.melspec_full, -S_dB.shape[1], axis=1)
         self.melspec_full[:, -S_dB.shape[1]:] = S_dB
