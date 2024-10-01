@@ -32,4 +32,5 @@
 04_Click_Detection_App/venv/include
 04_Click_Detection_App/venv/pyvenv.cfg
 
-01_Dataset/01_audioDatasets
+01_Dataset/01_audioDatasets/01_ethernet_without_additional_noise
+01_Dataset/01_audioDatasets/02_ethernet_with_additional_noise
