@@ -25,10 +25,11 @@
 
 .DS_Store
 04_Click_Detection_App/.DS_Store
+04_Click_Detection_App/__pycache__
 
-05_Click_Detection_python/venv/bin
-05_Click_Detection_python/venv/lib
-05_Click_Detection_python/venv/include
-05_Click_Detection_python/venv/pyvenv.cfg
+04_Click_Detection_App/venv/bin
+04_Click_Detection_App/venv/lib
+04_Click_Detection_App/venv/include
+04_Click_Detection_App/venv/pyvenv.cfg
 
-01_Data/01_audioDatasets
+01_Dataset/01_audioDatasets
