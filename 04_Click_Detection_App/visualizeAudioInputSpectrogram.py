@@ -6,6 +6,7 @@ import math
 import time
 from scipy import signal
 import matplotlib.ticker as ticker
+from clickDetector import ClickDetector
 
 # https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
 # https://librosa.org/doc/main/generated/librosa.power_to_db.html
