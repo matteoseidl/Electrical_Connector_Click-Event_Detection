@@ -1,36 +1,11 @@
-#exclude artifacts
+#exclude artifacts from git
 
-# .NET build artifacts
-04_Click_Detection_App/bin/
-04_Click_Detection_App/obj/
-
-# VS Code settings and logs
-.vscode/
-*.code-workspace
-.vscode/settings.json
-.vscode/launch.json
-.vscode/tasks.json
-.vscode/extensions.json
-
-# User-specific files
-*.user
-*.suo
-
-# Logs
-*.log
-
-# Other IDE-specific files
-.idea/
-
-
-.DS_Store
-04_Click_Detection_App/.DS_Store
-04_Click_Detection_App/__pycache__
-
-04_Click_Detection_App/venv/bin
-04_Click_Detection_App/venv/lib
-04_Click_Detection_App/venv/include
-04_Click_Detection_App/venv/pyvenv.cfg
-
+# dataset and model directories
 01_Dataset/01_audioDatasets/01_ethernet_without_additional_noise
 01_Dataset/01_audioDatasets/02_ethernet_with_additional_noise
+
+03_Click_Detection_Model/02_savedModels
+
+# automatically generated files
+.DS_Store
+__pycache__
