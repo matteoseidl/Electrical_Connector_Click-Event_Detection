@@ -5,8 +5,6 @@ import sys
 import threading
 from visualizeAudioInputAmplitude import AudioAmplitudePlotter
 from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
-from visualizeAudioInputSpectrogram_2 import AudioSpectrogramPlotter2
-from visualizeAudioInputSpectrogram_3 import AudioSpectrogramPlotter3
 import time
 
 
@@ -89,7 +87,6 @@ if __name__ == '__main__':
     audio_chapture_thread.start()
 
     #audio_plotter = AudioAmplitudePlotter(click_sense)
-    #spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
-    spectrogram_plotter = AudioSpectrogramPlotter3(click_sense)
+    spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
 
     audio_chapture_thread.join()

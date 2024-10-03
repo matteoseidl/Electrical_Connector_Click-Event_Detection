@@ -1,0 +1,7 @@
+# https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py
+# https://librosa.org/doc/main/generated/librosa.power_to_db.html
+# https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db
+# https://stackoverflow.com/questions/14267555/find-the-smallest-power-of-2-greater-than-or-equal-to-n-in-python
+# https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
+# https://librosa.org/doc/main/generated/librosa.power_to_db.html
+# https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb
