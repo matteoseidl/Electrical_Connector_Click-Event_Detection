@@ -14,11 +14,11 @@ import matplotlib.ticker as ticker
 # https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html
 # https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
 
-
-
 class AudioSpectrogramPlotter3:
     def __init__(self, click_sense):
         self.click_sense = click_sense
+
+        self.click_detected = False
 
         self.chunk_size = click_sense.chunk
 
@@ -154,6 +154,13 @@ class AudioSpectrogramPlotter3:
         print(f"new_ticks min: {new_ticks.min()}")
         print(f"new_ticks length: {len(new_ticks)}")
         #self.ax.set_xticks(new_ticks)
+
+        # input last 4 spectrogram chunks into the click detection model (total size: 128x32)
+
+        if self.click_detected == True:
+            print("Click detected!")
+        else:
+            print("No click detected.")
 
         return self.mel_spec_img,
 

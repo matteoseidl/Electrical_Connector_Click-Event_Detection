@@ -53,7 +53,6 @@ class ClickSense:
 
     def get_mic_input(self):
         with self.lock:
-            #return self.audio_data
             return self.mic_input
         
     def get_mic_input_spec(self):
