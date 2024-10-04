@@ -44,7 +44,8 @@ class ClickDetector:
         pass
     
     def normalize_spec_chunk(self, spec_chunk):
-        dB_min = -100
+        # min and max dB values set in the preprocessing notebook
+        dB_min = -120
         dB_max = 0
         normalized_spec_chunk = (spec_chunk - dB_min) / (dB_max - dB_min)
         return normalized_spec_chunk
