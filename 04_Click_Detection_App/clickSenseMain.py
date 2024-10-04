@@ -6,12 +6,23 @@ import threading
 from visualizeAudioInputAmplitude import AudioAmplitudePlotter
 from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
 import time
+import sys
+import os
+import torch
+from torch import nn
+from os.path import dirname, abspath
+from pathlib import Path
+import importlib
 
 
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
 channels = 1
 #format = pyaudio.paInt16
 format = pyaudio.paFloat32 # for librosa audio data must be floating-point
+
+model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
+selected_model = "ClickDetectorCNN_v1"
+model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_0.pt"
 
 class ClickSense:
     def __init__(self):
@@ -29,6 +40,12 @@ class ClickSense:
 
         self.time_old = None
         self.time_new = None
+
+        self.model_architectures_dir = model_architectures_dir
+        self.model_weights_path = model_weights_path
+        self.selected_model = selected_model
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model = self.load_model()
 
     def start_recording(self):
         self.audio_chapture = True
@@ -73,6 +90,28 @@ class ClickSense:
         self.stream.close()
         self.p.terminate()
         print("recording stopped")
+
+    def load_model(self):
+        current_file_path = os.path.abspath(__file__)
+        current_file_parent_dir = dirname(current_file_path)
+        print(f"current_file_parent_dir: {current_file_parent_dir}")
+        project_dir = dirname(current_file_parent_dir)
+        print(f"project_dir: {project_dir}")
+        model_architectures_dir_path = os.path.join(project_dir, self.model_architectures_dir)
+        model_weights = os.path.join(project_dir, self.model_weights_path)
+        if os.path.exists(model_architectures_dir_path):
+            sys.path.append(model_architectures_dir_path)
+            model_module = importlib.import_module(self.selected_model)
+            ClickDetectorCNN = getattr(model_module, 'ClickDetectorCNN') #access the ClickDetectorCNN class
+            model = ClickDetectorCNN(input_channels=1, output_shape=1).to(self.device)
+            if os.path.exists(model_weights):
+                model.load_state_dict(torch.load(model_weights))
+                return model
+            else:
+                print("Model weights file does not exist")
+        else:
+            print("Model architectures directory does not exist")
+        return None
 
 def signal_handler(sig, frame, click_sense):
     click_sense.stop_recording()

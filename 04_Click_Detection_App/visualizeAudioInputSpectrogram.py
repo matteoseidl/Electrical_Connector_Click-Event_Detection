@@ -18,8 +18,11 @@ from clickDetector import ClickDetector
 class AudioSpectrogramPlotter:
     def __init__(self, click_sense):
         self.click_sense = click_sense
+        self.detector = ClickDetector()
 
         self.click_detected = False
+        self.model = click_sense.model
+        print(f"model: {self.model}")
 
         self.chunk_size = click_sense.chunk
 
@@ -137,7 +140,7 @@ class AudioSpectrogramPlotter:
         self.melspec_full[:, -S_dB.shape[1]:] = S_dB
         
         self.mel_spec_img.set_array(self.melspec_full.ravel())
-        print(f"mel_spec_img shape: {self.melspec_full.shape}")
+        #print(f"mel_spec_img shape: {self.melspec_full.shape}")
 
 
         self.x_min += time_diff
@@ -145,20 +148,32 @@ class AudioSpectrogramPlotter:
         self.x_min_thick += self.chunk_freq
         self.x_max_thick += self.chunk_freq
         #self.x_min, self.x_max = self.ax.get_xlim()
-        print(f"x_min_thick: {self.x_min_thick}, x_max_thick: {self.x_max_thick}")
+        #print(f"x_min_thick: {self.x_min_thick}, x_max_thick: {self.x_max_thick}")
         
         #print(f"x_min: {self.x_min}, x_max: {self.x_max}")
-        print(f"frame: {frame}")
+        #print(f"frame: {frame}")
         #self.ax.set_xlim(self.x_min, self.x_max)
 
         new_ticks = np.arange(self.x_min_thick, self.x_max_thick, self.chunk_freq)
-        print(f"new_ticks min: {new_ticks.min()}")
-        print(f"new_ticks length: {len(new_ticks)}")
+        #print(f"new_ticks min: {new_ticks.min()}")
+        #print(f"new_ticks length: {len(new_ticks)}")
         #self.ax.set_xticks(new_ticks)
 
         # input last 4 spectrogram chunks into the click detection model (total size: 128x32)
 
-        if self.click_detected == True:
+        spectrogram_chunk = self.melspec_full[:, -32:] # size: 128x32
+        spectrogram_chunk_norm = self.detector.normalize_spec_chunk(spectrogram_chunk)
+        spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm) # model inpur 1 x 1 x 128 x 32
+        #print(f"spectrogram_chunk_tensor shape: {spectrogram_chunk_tensor.shape}")
+        prediction = self.detector.detection(self.model, spectrogram_chunk_tensor)
+
+        #print(f"model_input shape: {model_input.shape}")
+        #print(model_input.min(), model_input.max())
+
+        if prediction == 1:
+            self.click_detected = True
+
+        if self.click_detected:
             print("Click detected!")
         else:
             print("No click detected.")
