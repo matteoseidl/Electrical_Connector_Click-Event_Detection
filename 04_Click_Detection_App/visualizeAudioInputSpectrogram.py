@@ -49,8 +49,9 @@ class AudioSpectrogramPlotter:
         #print(f"init_spec shape: {self.init_spec.shape}")
         self.melspec_full = self.init_spec
 
-        self.top_dB_abs = 100 # max abs decibel value for the color map
-        self.dB_ref = 1e-12 # ref level
+        self.dB_ref = 1 # reference value for dB conversion, log(1) = 0
+        self.amin = 1e-12 # to avoid log(0)
+        self.top_dB_abs = 120 # maximum dB value -> 10*log(amin) = -120
         
         self.mel_spec_img = self.ax.pcolormesh(np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
                                                np.linspace(0, self.sr // 2, self.n_mels), 
@@ -64,7 +65,8 @@ class AudioSpectrogramPlotter:
         self.x_min_thick = self.x_min + self.resolution/2
         self.x_max_thick = self.x_max - self.resolution/2
         
-        self.mel_spec_img.set_clim(vmin=-self.top_dB_abs, vmax=self.dB_ref)
+        #self.mel_spec_img.set_clim(vmin=-self.top_dB_abs, vmax=self.dB_ref)
+        self.mel_spec_img.set_clim(vmin=-self.top_dB_abs, vmax=0)
 
         self.colorbar = self.fig.colorbar(self.mel_spec_img, ax=self.ax, format="%+2.0f dB")
         self.colorbar.set_label("Decibels (dB)")
@@ -89,14 +91,17 @@ class AudioSpectrogramPlotter:
 
         return next_power_of_two
     
-    def power_to_db(self, S_mel, amin, top_db):
+    def power_to_db(self, S_mel, amin, dB_ref):
     
-        S_dB = 10 * np.log10(np.maximum(S_mel, amin)) 
+        """S_dB = 10 * np.log10(np.maximum(S_mel, amin)) 
         #Sxx_dB -= 10 * np.log10(ref)
         # print(f" Sxx_dB max: {Sxx_dB.max()}")
-        S_dB_clipped = np.maximum(S_dB, S_dB.max() - top_db)
+        S_dB_clipped = np.maximum(S_dB, S_dB.max() - top_db)"""
+
+        S_dB = 10.0 * np.log10(np.maximum(amin, S_mel))
+        S_dB -= 10.0 * np.log10(np.maximum(amin, dB_ref))
         
-        return S_dB_clipped
+        return S_dB
     
     def update(self, frame):
         mic_input = self.click_sense.get_mic_input()
@@ -128,7 +133,8 @@ class AudioSpectrogramPlotter:
         print(f"S_mel max, min: {S_mel.max(), S_mel.min()}")"""
 
         #convert to decibels
-        S_dB = self.power_to_db(S_mel, amin=self.dB_ref, top_db=self.top_dB_abs)
+        #S_dB = self.power_to_db(S_mel, amin=self.dB_ref, top_db=self.top_dB_abs)
+        S_dB = self.power_to_db(S_mel, amin=self.amin, dB_ref=self.dB_ref)
         """print(f"S_dB shape: {S_dB.shape}")
         print(f"S_dB max, min: {S_dB.max(), S_dB.min()}")"""
 
