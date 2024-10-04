@@ -26,7 +26,7 @@ class ClickDetectorCNN(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(in_features=32*64*8,
+            nn.Linear(in_features=64 * 8 * 32,
                       out_features=output_shape),
             nn.Sigmoid()
         )
