@@ -106,6 +106,8 @@ class ClickSense:
             model = ClickDetectorCNN(input_channels=1, output_shape=1).to(self.device)
             if os.path.exists(model_weights):
                 model.load_state_dict(torch.load(model_weights))
+                model.to(self.device)
+                print("Model weights are loaded")
                 return model
             else:
                 print("Model weights file does not exist")

@@ -170,7 +170,7 @@ class AudioSpectrogramPlotter:
         #print(f"model_input shape: {model_input.shape}")
         #print(model_input.min(), model_input.max())
 
-        if prediction == 1:
+        if prediction == 1 and frame > self.chunks_per_plot/4: # ignore first 4 frames, as it is from spectrogram initialization
             self.click_detected = True
 
         if self.click_detected:

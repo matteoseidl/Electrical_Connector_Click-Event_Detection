@@ -59,8 +59,10 @@ class ClickDetector:
         with torch.inference_mode():
             model_prediction = model(spec_chunk)
             model_prediction = torch.squeeze(model_prediction)
+            print(model_prediction)
         
         binary_predictions = (model_prediction > binary_threshold).float()
+        print(binary_predictions)
         
         return binary_predictions
         
