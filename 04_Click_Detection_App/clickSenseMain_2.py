@@ -51,7 +51,7 @@ class ClickSense2:
         self.audio_chapture = True
         
         while self.audio_chapture:
-            data = self.stream.read(self.chunk)
+            data = self.stream.read(self.chunk, exception_on_overflow=False)
             audio_data = np.frombuffer(data, dtype=np.float32)
             #amplitude = np.linalg.norm(audio_data) / len(audio_data)
             mic_input = audio_data
@@ -108,6 +108,7 @@ class ClickSense2:
                 model.load_state_dict(torch.load(model_weights))
                 model.to(self.device)
                 print("Model weights are loaded")
+                print(f"model: {model}")
                 return model
             else:
                 print("Model weights file does not exist")
@@ -127,8 +128,9 @@ if __name__ == '__main__':
     audio_chapture_thread = threading.Thread(target=click_sense.start_recording)
     audio_chapture_thread.start()
 
-    #audio_plotter = AudioAmplitudePlotter(click_sense)
+    #anput("Press Enter to start plotting spectrogram...")
+
     audio_spectrogram_plotter = AudioSpectrogramPlotter2(click_sense)
 
-
     audio_chapture_thread.join()
+

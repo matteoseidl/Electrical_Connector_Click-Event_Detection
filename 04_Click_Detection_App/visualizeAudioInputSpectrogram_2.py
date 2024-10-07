@@ -17,46 +17,46 @@ from clickDetector_2 import ClickDetector2
 # https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
 
 class AudioSpectrogramPlotter2:
-    def __init__(self, click_sense):
+    def __init__(self, click_sense, fig, ax):
         self.click_sense = click_sense
         self.detector = ClickDetector2()
 
         self.click_detected = False
         self.model = click_sense.model
-        print(f"model: {self.model}")
 
         self.chunk_size = click_sense.chunk
 
-        self.chunk_freq = self.chunk_size/click_sense.sampling_rate_downsampled # in case of a chunk size of 2048 and sampling rate 16 kHz: 2048/16000 = 0.128 s, meaning that 0.128 s corresponds to one chunk
-        self.chunks_per_plot = click_sense.chunks_per_plot # number of chunks to plot
-        self.plot_update_freq = self.chunk_freq * 1000 # plot update frequency in milliseconds, updating for every plot
+        self.chunk_freq = self.chunk_size/click_sense.sampling_rate_downsampled
+        self.chunks_per_plot = click_sense.chunks_per_plot
+        self.plot_update_freq = self.chunk_freq * 1000
 
-        self.fig_x = 12
-        self.fig_y = 6
-        self.fig, self.ax = plt.subplots(1, 1, figsize=(self.fig_x, self.fig_y))
-        self.fig.canvas.manager.set_window_title('clickSense - Spectrogram Plotter')
+        self.fig = fig
+        self.ax = ax
+        
+        # Clear existing axes content
+        self.ax.clear()
 
         self.sr = click_sense.sampling_rate_downsampled
 
-        self.resolution = 0.016 # in seconds, resulting in 32 frames for the 1.024 s plot duration
-        self.hop_length = int(self.resolution * click_sense.sampling_rate_downsampled) # hop_length is the number of samples between successive frames, 0.016s * 16000 1/s = 256 samples
-        self.n_fft = self.next_power_of_2(self.hop_length) # n_fft is the number of samples in each window, 512 samples, next power of 2 is 1024
+        self.resolution = 0.016
+        self.hop_length = int(self.resolution * click_sense.sampling_rate_downsampled)
+        self.n_fft = self.next_power_of_2(self.hop_length)
 
         self.samples_per_plot = int((self.chunk_size * self.chunks_per_plot))
 
-        #initialize spectrogram with zeros
         self.n_mels = 128
         self.init_spec = np.zeros((self.n_mels, int(self.samples_per_plot / self.hop_length)))
-        #print(f"init_spec shape: {self.init_spec.shape}")
         self.melspec_full = self.init_spec
 
-        self.dB_ref = 1 # reference value for dB conversion, log(1) = 0
-        self.amin = 1e-12 # to avoid log(0)
-        self.top_dB_abs = 120 # maximum dB value -> 10*log(amin) = -120
+        self.dB_ref = 1
+        self.amin = 1e-12
+        self.top_dB_abs = 120
         
-        self.mel_spec_img = self.ax.pcolormesh(np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
-                                               np.linspace(0, self.sr // 2, self.n_mels), 
-                                               self.init_spec, shading='auto', cmap='inferno')
+        self.mel_spec_img = self.ax.pcolormesh(
+            np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
+            np.linspace(0, self.sr // 2, self.n_mels), 
+            self.init_spec, shading='auto', cmap='inferno'
+        )
         
         self.ax.set_xlim(0 - self.resolution/2, (self.chunk_size / self.sr) * self.chunks_per_plot + self.resolution/2)
         #self.x_min, self.x_max = self.ax.get_xlim()
@@ -80,9 +80,9 @@ class AudioSpectrogramPlotter2:
 
         self.time_old = time.time()
 
-        self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=False) # interval in milliseconds
+        #self.ani = animation.FuncAnimation(self.fig, self.update, interval=self.plot_update_freq, blit=False) # interval in milliseconds
 
-        plt.show()
+        #plt.show()
 
     def next_power_of_2(self, x):
         next_power_of_two = 2**(math.ceil(math.log(x, 2)))
@@ -185,7 +185,7 @@ class AudioSpectrogramPlotter2:
         else:
             print("No click detected.")
 
-        return self.mel_spec_img,
+        #return self.mel_spec_img,
 
     def handle_close(self, event):
         print("Closing plot window. Stopping recording...")
