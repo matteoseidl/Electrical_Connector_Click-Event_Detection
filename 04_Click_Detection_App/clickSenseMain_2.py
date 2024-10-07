@@ -3,8 +3,6 @@ import numpy as np
 import signal
 import sys
 import threading
-from visualizeAudioInputAmplitude import AudioAmplitudePlotter
-from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
 import time
 import sys
 import os
@@ -13,6 +11,8 @@ from torch import nn
 from os.path import dirname, abspath
 from pathlib import Path
 import importlib
+
+from visualizeAudioInputSpectrogram_2 import AudioSpectrogramPlotter2
 
 
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
@@ -24,7 +24,7 @@ model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
 selected_model = "ClickDetectorCNN_v1"
 model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_1.pt"
 
-class ClickSense:
+class ClickSense2:
     def __init__(self):
         self.p = pyaudio.PyAudio()
         self.sampling_rate_downsampled = int(sampling_rate_orig/3) # downsampled to 16 kHz to reduce computational load
@@ -120,7 +120,7 @@ def signal_handler(sig, frame, click_sense):
     sys.exit(0)
 
 if __name__ == '__main__':
-    click_sense = ClickSense()
+    click_sense = ClickSense2()
 
     signal.signal(signal.SIGINT, lambda sig, frame: signal_handler(sig, frame, click_sense))
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     audio_chapture_thread.start()
 
     #audio_plotter = AudioAmplitudePlotter(click_sense)
-    audio_spectrogram_plotter = AudioSpectrogramPlotter(click_sense)
+    audio_spectrogram_plotter = AudioSpectrogramPlotter2(click_sense)
 
 
     audio_chapture_thread.join()
