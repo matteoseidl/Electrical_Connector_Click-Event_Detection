@@ -51,32 +51,8 @@ class AudioSpectrogramPlotter2:
         self.dB_ref = 1
         self.amin = 1e-12
         self.top_dB_abs = 120
-        
-        self.mel_spec_img = self.ax.pcolormesh(
-            np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
-            np.linspace(0, self.sr // 2, self.n_mels), 
-            self.init_spec, shading='auto', cmap='inferno'
-        )
-        
-        self.ax.set_xlim(0 - self.resolution/2, (self.chunk_size / self.sr) * self.chunks_per_plot + self.resolution/2)
-        #self.x_min, self.x_max = self.ax.get_xlim()
-        self.ax.xaxis.set_major_locator(ticker.MultipleLocator(base=self.chunk_freq))
-        self.ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f'{x:.3f}'))
-        self.x_min, self.x_max = self.ax.get_xlim()
-        self.x_min_thick = self.x_min + self.resolution/2
-        self.x_max_thick = self.x_max - self.resolution/2
-        
-        #self.mel_spec_img.set_clim(vmin=-self.top_dB_abs, vmax=self.dB_ref)
-        self.mel_spec_img.set_clim(vmin=-self.top_dB_abs, vmax=0)
-
-        self.colorbar = self.fig.colorbar(self.mel_spec_img, ax=self.ax, format="%+2.0f dB")
-        self.colorbar.set_label("Decibels (dB)")
 
         self.mel_filter = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=128)
-
-        self.ax.set(title='Mel Spectrogram')
-        self.ax.set_xlabel('Time (s)')
-        self.ax.set_ylabel('Frequency (Hz)')
 
         self.time_old = time.time()
 
@@ -93,11 +69,6 @@ class AudioSpectrogramPlotter2:
         return next_power_of_two
     
     def power_to_db(self, S_mel, amin, dB_ref):
-    
-        """S_dB = 10 * np.log10(np.maximum(S_mel, amin)) 
-        #Sxx_dB -= 10 * np.log10(ref)
-        # print(f" Sxx_dB max: {Sxx_dB.max()}")
-        S_dB_clipped = np.maximum(S_dB, S_dB.max() - top_db)"""
 
         S_dB = 10.0 * np.log10(np.maximum(amin, S_mel))
         S_dB -= 10.0 * np.log10(np.maximum(amin, dB_ref))
@@ -110,35 +81,19 @@ class AudioSpectrogramPlotter2:
         if mic_input is None:
             mic_input = np.zeros(self.click_sense.chunk * self.chunks_per_plot)
 
-        #print(f"mic_input shape: {mic_input.shape}")
-
-        #melspec_chunk  = librosa.feature.melspectrogram(y=mic_input, sr=self.sr, n_fft=self.n_fft, hop_length=self.hop_length)
-        #print(f"melspec shape: {melspec.shape}")
+        print(f"mic_input shape: {mic_input.shape}")
 
         chunk_stft = librosa.stft(mic_input, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft)
-        """print(f"chunk_stft shape: {chunk_stft.shape}")
-        print(f"chunk_stft max, min: {chunk_stft.max(), chunk_stft.min()}")"""
 
         #power spectral density
         S = np.abs(chunk_stft) ** 2
-        #S = np.abs(chunk_stft)
 
         #mel scale
         mel_filter_bank = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=self.n_mels, htk=True)
         S_mel = np.dot(mel_filter_bank, S)
-
-        #first mel scale
-        #chunk_stft_mel = librosa.hz_to_mel(chunk_stft, htk=True)
-
-        """print(f"mel shape: {S_mel.shape}")
-        print(f"S_mel max, min: {S_mel.max(), S_mel.min()}")"""
-
-        #convert to decibels
-        #S_dB = self.power_to_db(S_mel, amin=self.dB_ref, top_db=self.top_dB_abs)
+    
         S_dB = self.power_to_db(S_mel, amin=self.amin, dB_ref=self.dB_ref)
-        """print(f"S_dB shape: {S_dB.shape}")
-        print(f"S_dB max, min: {S_dB.max(), S_dB.min()}")"""
-
+    
         time_now = time.time()
         time_diff = time_now - self.time_old
         self.time_old = time_now
@@ -147,24 +102,7 @@ class AudioSpectrogramPlotter2:
         self.melspec_full[:, -S_dB.shape[1]:] = S_dB
         
         self.mel_spec_img.set_array(self.melspec_full.ravel())
-        #print(f"mel_spec_img shape: {self.melspec_full.shape}")
-
-
-        self.x_min += time_diff
-        self.x_max += time_diff
-        self.x_min_thick += self.chunk_freq
-        self.x_max_thick += self.chunk_freq
-        #self.x_min, self.x_max = self.ax.get_xlim()
-        #print(f"x_min_thick: {self.x_min_thick}, x_max_thick: {self.x_max_thick}")
-        
-        #print(f"x_min: {self.x_min}, x_max: {self.x_max}")
-        #print(f"frame: {frame}")
-        #self.ax.set_xlim(self.x_min, self.x_max)
-
-        new_ticks = np.arange(self.x_min_thick, self.x_max_thick, self.chunk_freq)
-        #print(f"new_ticks min: {new_ticks.min()}")
-        #print(f"new_ticks length: {len(new_ticks)}")
-        #self.ax.set_xticks(new_ticks)
+        #print(f"mel_spec_img shape: {self.melspec_full.shape}"
 
         # input last 4 spectrogram chunks into the click detection model (total size: 128x32)
 
@@ -173,9 +111,6 @@ class AudioSpectrogramPlotter2:
         spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm) # model inpur 1 x 1 x 128 x 32
         #print(f"spectrogram_chunk_tensor shape: {spectrogram_chunk_tensor.shape}")
         prediction = self.detector.detection(self.model, spectrogram_chunk_tensor)
-
-        #print(f"model_input shape: {model_input.shape}")
-        #print(model_input.min(), model_input.max())
 
         if prediction == 1 and frame > self.chunks_per_plot/4: # ignore first 4 frames, as it is from spectrogram initialization
             self.click_detected = True

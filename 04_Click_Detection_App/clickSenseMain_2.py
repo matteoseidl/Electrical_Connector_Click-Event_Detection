@@ -13,6 +13,7 @@ from pathlib import Path
 import importlib
 
 from visualizeAudioInputSpectrogram_2 import AudioSpectrogramPlotter2
+from clickDetector_2 import ClickDetector2
 
 
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
@@ -45,7 +46,10 @@ class ClickSense2:
         self.model_weights_path = model_weights_path
         self.selected_model = selected_model
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model = self.load_model()
+        #self.model = self.load_model()
+
+        self.detector = ClickDetector2()
+        self.model = self.detector.load_model(self.model_architectures_dir, self.selected_model, self.model_weights_path)
 
     def start_recording(self):
         self.audio_chapture = True
@@ -55,6 +59,7 @@ class ClickSense2:
             audio_data = np.frombuffer(data, dtype=np.float32)
             #amplitude = np.linalg.norm(audio_data) / len(audio_data)
             mic_input = audio_data
+            print("mic_input: ", mic_input)
             
             with self.lock:
                 self.mic_input = mic_input
