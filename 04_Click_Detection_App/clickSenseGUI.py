@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel
+from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ class ClickDetectorGUI(QMainWindow):
         
     def setup_ui(self):
         self.setWindowTitle("clickSense")
-        self.setGeometry(100, 100, 1400, 1000)
+        self.setGeometry(100, 100, 1200, 800)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -28,12 +29,23 @@ class ClickDetectorGUI(QMainWindow):
         self.stop_button = QPushButton("Stop detection")
         self.stop_button.setEnabled(False)
         
+        # add text widget for displaying click detection results
+        self.status_label = QLabel("Click start button", self)
+        self.detection_label = QLabel("No click detected", self)
+        self.status_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.status_label.setStyleSheet("color: black; background-color: yellow; border: 1px solid black;")
+        
+        self.detection_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.detection_label.setStyleSheet("color: black; background-color: lightblue; border: 1px solid black;")
+        
         self.fig, self.ax = plt.subplots(1, 1, figsize=(14, 6))
         self.canvas = FigureCanvas(self.fig)
         
         layout.addWidget(self.canvas)
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
+        layout.addWidget(self.status_label)
+        layout.addWidget(self.detection_label)
         
         self.start_button.clicked.connect(self.start_recording)
         self.stop_button.clicked.connect(self.stop_recording)
@@ -52,6 +64,9 @@ class ClickDetectorGUI(QMainWindow):
         self.audio_thread.start()
         
         self.timer.start(int(self.plotter.plot_update_freq))
+
+        self.status_label.setText("clickSense in action")
+        self.status_label.setStyleSheet("color: black; background-color: lightgreen; border: 1px solid black;")
         
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
@@ -68,7 +83,13 @@ class ClickDetectorGUI(QMainWindow):
     
     def update_plot(self):
         if self.plotter:
-            self.plotter.update(None)
+            self.detection_result = self.plotter.update()
+            print(f"detection_result: {self.detection_result}")
+
+            if self.detection_result:
+                self.detection_label.setText("Click detected")
+                self.detection_label.setStyleSheet("color: white; background-color: green; border: 1px solid black;")
+
             self.canvas.draw()
 
 def main():

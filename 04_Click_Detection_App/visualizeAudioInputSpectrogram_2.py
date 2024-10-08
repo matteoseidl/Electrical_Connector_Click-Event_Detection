@@ -85,8 +85,6 @@ class AudioSpectrogramPlotter2:
         self.colorbar = self.fig.colorbar(self.mel_spec_img, ax=self.ax, format="%+2.0f dB")
         self.colorbar.set_label("Decibels (dB)")
 
-        #self.mel_filter = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=128)
-
         self.ax.set(title='Mel Spectrogram')
         self.ax.set_xlabel('Time (s)')
         self.ax.set_ylabel('Frequency (Hz)')
@@ -98,7 +96,7 @@ class AudioSpectrogramPlotter2:
         
         return S_dB
 
-    def update(self, frame):
+    def update(self):
         mic_input = self.click_sense.get_mic_input()
         if mic_input is None:
             return
@@ -110,7 +108,9 @@ class AudioSpectrogramPlotter2:
         self.update_spectrogram(S_dB)
         
         # perform click detection
-        self.detect_click()
+        self.detection_res = self.detect_click()
+
+        return self.detection_res
 
     def process_audio_data(self, mic_input):
         chunk_stft = librosa.stft(mic_input, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft)
@@ -127,16 +127,21 @@ class AudioSpectrogramPlotter2:
 
     def detect_click(self):
         spectrogram_chunk = self.melspec_full[:, -32:]
-        spectrogram_chunk_norm = self.detector.normalize_spec_chunk(spectrogram_chunk)
-        spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm)
-        prediction = self.detector.detection(self.model, spectrogram_chunk_tensor)
+
+        if self.detection_counter > self.chunks_per_plot/4:
+
+            spectrogram_chunk_norm = self.detector.normalize_spec_chunk(spectrogram_chunk)
+            spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm)
+            prediction = self.detector.detection(self.model, spectrogram_chunk_tensor)
+            
+            if prediction == 1:
+                self.click_detected = True
+
+            if self.click_detected:
+                print("Click detected!")
+            else:
+                print("No click detected.")
 
         self.detection_counter += 1
-        
-        if prediction == 1 and self.detection_counter > self.chunks_per_plot/4:
-            self.click_detected = True
 
-        if self.click_detected:
-            print("Click detected!")
-        else:
-            print("No click detected.")
+        return self.click_detected

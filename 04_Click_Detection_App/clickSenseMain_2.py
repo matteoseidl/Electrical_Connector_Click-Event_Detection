@@ -55,7 +55,7 @@ class ClickSense2:
                 
                 with self.lock:
                     self.mic_input = audio_data
-                    print(f"mic_input: {self.mic_input}")
+                    #print(f"mic_input: {self.mic_input}")
                     mic_input_arr = np.array(audio_data)
                     self.mic_input_spec = np.roll(self.mic_input_spec, -mic_input_arr.shape[0])
                     self.mic_input_spec[-mic_input_arr.shape[0]:] = mic_input_arr

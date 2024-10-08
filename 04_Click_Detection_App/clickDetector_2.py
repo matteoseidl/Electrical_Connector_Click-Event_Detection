@@ -19,14 +19,14 @@ class ClickDetector2:
         #self.model = self.load_model()
     
     def load_model(self, model_architectures_dir, selected_model, model_weights_path):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         current_file_path = os.path.abspath(__file__)
         current_file_parent_dir = dirname(current_file_path)
-        print(f"current_file_parent_dir: {current_file_parent_dir}")
+        #print(f"current_file_parent_dir: {current_file_parent_dir}")
         project_dir = dirname(current_file_parent_dir)
-        print(f"project_dir: {project_dir}")
+        #print(f"project_dir: {project_dir}")
         model_architectures_dir_path = os.path.join(project_dir, model_architectures_dir)
         model_weights = os.path.join(project_dir, model_weights_path)
+
         if os.path.exists(model_architectures_dir_path):
             sys.path.append(model_architectures_dir_path)
             model_module = importlib.import_module(selected_model)
@@ -35,7 +35,7 @@ class ClickDetector2:
             if os.path.exists(model_weights):
                 model.load_state_dict(torch.load(model_weights))
                 model.to(self.device)
-                print("Model weights are loaded")
+                print("Model weights have been loaded")
                 print(f"model: {model}")
                 return model
             else:
