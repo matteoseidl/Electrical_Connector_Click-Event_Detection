@@ -19,7 +19,7 @@ class ClickDetectorGUI(QMainWindow):
         
     def setup_ui(self):
         self.setWindowTitle("clickSense")
-        self.setGeometry(100, 100, 1200, 800)
+        self.setGeometry(50, 50, 1200, 800)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
