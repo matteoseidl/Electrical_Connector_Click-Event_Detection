@@ -16,7 +16,7 @@ from clickDetector import ClickDetector
 # https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html
 # https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
 
-class AudioSpectrogramPlotter2:
+class AudioSpectrogramPlotter:
     def __init__(self, click_sense, fig, ax):
         self.click_sense = click_sense
         self.model = click_sense.model
