@@ -12,8 +12,8 @@ from os.path import dirname, abspath
 from pathlib import Path
 import importlib
 
-from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter2
-from clickDetector import ClickDetector2
+from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
+from clickDetector import ClickDetector
 
 
 sampling_rate_orig = 48000 # original sampling rate of the microphone, defined by using "system_profiler SPAudioDataType" in macOS terminal to list connected audio devices and their properties
@@ -35,7 +35,7 @@ class ClickSense:
         self.chunks_per_plot = 16
         self.mic_input_spec = np.zeros(self.chunk * self.chunks_per_plot)
         
-        self.detector = ClickDetector2()
+        self.detector = ClickDetector()
         self.model = self.detector.load_model(model_architectures_dir, selected_model, model_weights_path)
 
     def start_recording(self):
