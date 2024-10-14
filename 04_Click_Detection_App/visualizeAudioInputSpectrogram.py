@@ -9,12 +9,7 @@ import matplotlib.ticker as ticker
 
 from clickDetector import ClickDetector
 
-# https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
-# https://librosa.org/doc/main/generated/librosa.power_to_db.html
-# https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb
-# https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0
-# https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html
-# https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
+
 
 class AudioSpectrogramPlotter:
     def __init__(self, click_sense, fig, ax):
