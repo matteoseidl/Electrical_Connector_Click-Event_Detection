@@ -17,6 +17,7 @@ class ClickDetectorGUI(QMainWindow):
         self.setup_ui()
         self.setup_audio()
         
+    # user interface setup
     def setup_ui(self):
         self.setWindowTitle("clickSense")
         self.setGeometry(50, 50, 1200, 800)
@@ -25,45 +26,48 @@ class ClickDetectorGUI(QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
         
+        # buttons for strating and stopping click detection
         self.start_button = QPushButton("Start detection")
         self.stop_button = QPushButton("Stop detection")
         self.stop_button.setEnabled(False)
         
-        # add text widget for displaying click detection results
-        self.status_label = QLabel("Click start button", self)
+        # text widgets for displaying status and click detection results
+        self.status_label = QLabel("Click on start button", self)
         self.detection_label = QLabel("No click detected", self)
+
         self.status_label.setAlignment(QtCore.Qt.AlignCenter)
         self.status_label.setStyleSheet("color: black; background-color: yellow; border: 1px solid black;")
-        
         self.detection_label.setAlignment(QtCore.Qt.AlignCenter)
         self.detection_label.setStyleSheet("color: black; background-color: lightblue; border: 1px solid black;")
         
+        # plot for displaying the audio input spectrogram
         self.fig, self.ax = plt.subplots(1, 1, figsize=(14, 6))
         self.canvas = FigureCanvas(self.fig)
         
+        # add widgets to the layout
         layout.addWidget(self.canvas)
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
         layout.addWidget(self.status_label)
         layout.addWidget(self.detection_label)
         
-        self.start_button.clicked.connect(self.start_recording)
+        self.start_button.clicked.connect(self.start_detection)
         self.stop_button.clicked.connect(self.stop_recording)
         
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
 
     def setup_audio(self):
-        self.click_sense = ClickSense()
-        self.plotter = AudioSpectrogramPlotter(self.click_sense, self.fig, self.ax)
+        self.click_sense = ClickSense() # initialize ClickSense object from clickSenseMain.py
+        self.plotter = AudioSpectrogramPlotter(self.click_sense, self.fig, self.ax) # initialize AudioSpectrogramPlotter object from visualizeAudioInputSpectrogram.py
         self.audio_thread = None
     
-    def start_recording(self):
+    def start_detection(self):
         self.audio_thread = threading.Thread(target=self.click_sense.start_recording)
-        self.audio_thread.daemon = True
+        self.audio_thread.daemon = True # set to run in the backround
         self.audio_thread.start()
         
-        self.timer.start(int(self.plotter.plot_update_freq))
+        self.timer.start(int(self.plotter.plot_update_freq)) # plot update frequency defined in visualizeAudioInputSpectrogram.py
 
         self.status_label.setText("clickSense in action")
         self.status_label.setStyleSheet("color: black; background-color: lightgreen; border: 1px solid black;")
@@ -75,7 +79,7 @@ class ClickDetectorGUI(QMainWindow):
         if self.click_sense:
             self.click_sense.stop_recording()
         if self.audio_thread:
-            self.audio_thread.join(timeout=1.0)
+            self.audio_thread.join(timeout=1.0) # wait 1 second for the thread to finish
         self.timer.stop()
         
         self.start_button.setEnabled(True)
@@ -83,7 +87,7 @@ class ClickDetectorGUI(QMainWindow):
     
     def update_plot(self):
         if self.plotter:
-            self.detection_result = self.plotter.update()
+            self.detection_result = self.plotter.update() # return value from update method in AudioSpectrogramPlotter.py
             print(f"detection_result: {self.detection_result}")
 
             if self.detection_result:
