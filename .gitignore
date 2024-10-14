@@ -1,8 +1,8 @@
 #exclude artifacts from git
 
 # dataset and model directories
-01_Dataset/01_audioDatasets/01_ethernet_without_additional_noise
-01_Dataset/01_audioDatasets/02_ethernet_with_additional_noise
+01_Dataset/01_audioDatasets
+01_Dataset/01_audioDatasets
 
 03_Click_Detection_Model/02_savedWeights
 
