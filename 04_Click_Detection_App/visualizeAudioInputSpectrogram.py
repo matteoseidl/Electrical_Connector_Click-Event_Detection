@@ -7,8 +7,6 @@ import time
 from scipy import signal
 import matplotlib.ticker as ticker
 
-from clickDetector import ClickDetector
-
 class AudioSpectrogramPlotter:
     def __init__(self, click_sense, fig, ax):
         self.click_sense = click_sense
