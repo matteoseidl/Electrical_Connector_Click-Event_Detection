@@ -6,33 +6,37 @@ import importlib
 import torch
 from torch import nn
 
-model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
+"""model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
 selected_model = "ClickDetectorCNN_v1"
-model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_0.pt"   
+model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_0.pt"   """
 
 class ClickDetector:
     def __init__(self):
-        self.model_architectures_dir = model_architectures_dir
+        """self.model_architectures_dir = model_architectures_dir
         self.model_weights_path = model_weights_path
-        self.selected_model = selected_model
+        self.selected_model = selected_model"""
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model = self.load_model()
-
-    def load_model(self):
+        #self.model = self.load_model()
+    
+    def load_model(self, model_architectures_dir, selected_model, model_weights_path):
         current_file_path = os.path.abspath(__file__)
         current_file_parent_dir = dirname(current_file_path)
-        print(f"current_file_parent_dir: {current_file_parent_dir}")
+        #print(f"current_file_parent_dir: {current_file_parent_dir}")
         project_dir = dirname(current_file_parent_dir)
-        print(f"project_dir: {project_dir}")
-        model_architectures_dir_path = os.path.join(project_dir, self.model_architectures_dir)
-        model_weights = os.path.join(project_dir, self.model_weights_path)
+        #print(f"project_dir: {project_dir}")
+        model_architectures_dir_path = os.path.join(project_dir, model_architectures_dir)
+        model_weights = os.path.join(project_dir, model_weights_path)
+
         if os.path.exists(model_architectures_dir_path):
             sys.path.append(model_architectures_dir_path)
-            model_module = importlib.import_module(self.selected_model)
+            model_module = importlib.import_module(selected_model)
             ClickDetectorCNN = getattr(model_module, 'ClickDetectorCNN') #access the ClickDetectorCNN class
             model = ClickDetectorCNN(input_channels=1, output_shape=1).to(self.device)
             if os.path.exists(model_weights):
                 model.load_state_dict(torch.load(model_weights))
+                model.to(self.device)
+                print("Model weights have been loaded")
+                print(f"model: {model}")
                 return model
             else:
                 print("Model weights file does not exist")

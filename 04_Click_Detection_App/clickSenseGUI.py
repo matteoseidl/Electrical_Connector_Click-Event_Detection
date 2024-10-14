@@ -8,8 +8,8 @@ import numpy as np
 import matplotlib.ticker as ticker
 import threading
 
-from clickSenseMain_2 import ClickSense2
-from visualizeAudioInputSpectrogram_2 import AudioSpectrogramPlotter2
+from clickSenseMain import ClickSense
+from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
 
 class ClickDetectorGUI(QMainWindow):
     def __init__(self):
@@ -54,8 +54,8 @@ class ClickDetectorGUI(QMainWindow):
         self.timer.timeout.connect(self.update_plot)
 
     def setup_audio(self):
-        self.click_sense = ClickSense2()
-        self.plotter = AudioSpectrogramPlotter2(self.click_sense, self.fig, self.ax)
+        self.click_sense = ClickSense()
+        self.plotter = AudioSpectrogramPlotter(self.click_sense, self.fig, self.ax)
         self.audio_thread = None
     
     def start_recording(self):
