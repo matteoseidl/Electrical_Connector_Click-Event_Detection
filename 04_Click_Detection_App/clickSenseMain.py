@@ -20,23 +20,29 @@ sampling_rate_orig = 48000 # original sampling rate of the microphone, defined b
 channels = 1
 format = pyaudio.paFloat32 # for librosa audio data must be floating-point
 
+# path to the model architecture and weights
 model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
 selected_model = "ClickDetectorCNN_v1"
 model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_1.pt"
 
 class ClickSense:
     def __init__(self):
-        self.p = pyaudio.PyAudio()
-        self.sampling_rate_downsampled = int(sampling_rate_orig/3)
-        self.chunk = 2048
+        self.p = pyaudio.PyAudio() # instantiate PyAudio for audio capture
+
+        # constant parameters for audio capture, same as used audio preprocessing and training data generation
+        self.sampling_rate_downsampled = 32000
+        self.chunk = 4096
+
         self.stream = None
         self.audio_capture = False
-        self.lock = threading.Lock()
+        self.lock = threading.Lock() # create lock object
+
+        # number of chunks protted in one plot --> 16 chunks -> 16*4096 samples = 65536 samples = 2.048 seconds at 32kHz sampling rate
         self.chunks_per_plot = 16
-        self.mic_input_spec = np.zeros(self.chunk * self.chunks_per_plot)
+        #self.mic_input_spec = np.zeros(self.chunk * self.chunks_per_plot)
         
-        self.detector = ClickDetector()
-        self.model = self.detector.load_model(model_architectures_dir, selected_model, model_weights_path)
+        self.detector = ClickDetector() # instantiate ClickDetector class
+        self.model = self.detector.load_model(model_architectures_dir, selected_model, model_weights_path) # load model with weights
 
     def start_recording(self):
         self.stream = self.p.open(
@@ -44,21 +50,18 @@ class ClickSense:
             channels=channels,
             rate=self.sampling_rate_downsampled,
             input=True,
-            frames_per_buffer=self.chunk
+            frames_per_buffer=self.chunk # number of samples processed at a time
         )
         self.audio_capture = True
         
         while self.audio_capture:
             try:
-                data = self.stream.read(self.chunk, exception_on_overflow=False)
-                audio_data = np.frombuffer(data, dtype=np.float32)
+                data = self.stream.read(self.chunk, exception_on_overflow=True)
+                audio_data = np.frombuffer(data, dtype=np.float32) # convert audio input data to numpy array
                 
                 with self.lock:
                     self.mic_input = audio_data
-                    #print(f"mic_input: {self.mic_input}")
-                    mic_input_arr = np.array(audio_data)
-                    self.mic_input_spec = np.roll(self.mic_input_spec, -mic_input_arr.shape[0])
-                    self.mic_input_spec[-mic_input_arr.shape[0]:] = mic_input_arr
+
             except Exception as e:
                 print(f"Error in audio capture: {e}")
                 break
@@ -74,8 +77,4 @@ class ClickSense:
     def get_mic_input(self):
         with self.lock:
             return self.mic_input.copy() if hasattr(self, 'mic_input') else None
-
-    def get_mic_input_spec(self):
-        with self.lock:
-            return self.mic_input_spec.copy()
 
