@@ -1,14 +1,18 @@
-# https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py
-# https://librosa.org/doc/main/generated/librosa.power_to_db.html
-# https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db
-# https://stackoverflow.com/questions/14267555/find-the-smallest-power-of-2-greater-than-or-equal-to-n-in-python
-# https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
-# https://librosa.org/doc/main/generated/librosa.power_to_db.html
-# https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb
+- librosa documentation:
+    - mel freqencies:
+        https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
 
-# https://librosa.org/doc/main/auto_examples/plot_patch_generation.html
-# https://librosa.org/doc/main/generated/librosa.power_to_db.html
-# https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb
-# https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0
-# https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html
-# https://librosa.org/doc/main/generated/librosa.mel_frequencies.html
+    - power to decibel conversion: 
+        https://librosa.org/doc/main/generated/librosa.power_to_db.html,
+        https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db
+
+- implementation examples:
+    - live spectrogram generation:
+        https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py
+
+    - real-time sound event detection using spectrogram - SED during badminton play:
+        https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb
+
+    - theory of spectogram and mel spectrogram and visualisation using python:
+        https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0
+        https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html
