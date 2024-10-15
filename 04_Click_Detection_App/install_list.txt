@@ -1,7 +1,8 @@
-- PortAudio
-- pyaudio
-- numpy
-- matplotlib
-- librosa
+- PortAudio (apt-get install portaudio19-dev)
 
-- python3 virtual env
+-> create python3 virtual environment and install:
+    - pyaudio
+    - numpy
+    - matplotlib
+    - librosa
+    - PyQt5
