@@ -25,7 +25,7 @@ class ClickDetector:
             ClickDetectorCNN = getattr(model_module, 'ClickDetectorCNN') #access the ClickDetectorCNN class
             model = ClickDetectorCNN(input_channels=1, output_shape=1).to(self.device)
             if os.path.exists(model_weights):
-                model.load_state_dict(torch.load(model_weights)) # load model weights
+                model.load_state_dict(torch.load(model_weights, map_location=self.device, weights_only=True)) # load model weights, map location of weights to device
                 model.to(self.device)
                 print("Model weights have been loaded")
                 print(f"model: {model}")
@@ -52,7 +52,7 @@ class ClickDetector:
     
     def detection(self, model, spec_chunk):
         model.eval()
-        binary_threshold = 0.5 # threshold for binary classification
+        binary_threshold = 0.05 # threshold for binary classification
         with torch.inference_mode():
             model_prediction = model(spec_chunk)
             model_prediction = torch.squeeze(model_prediction)
