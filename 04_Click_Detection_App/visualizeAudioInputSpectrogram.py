@@ -89,7 +89,7 @@ class AudioSpectrogramPlotter:
     
     def power_mel_to_db(self, D_mel, a_squere_min, dB_ref):
 
-        D_mel_dB = 10.0 * np.log10(np.maximum(a_squere_min, np.minimum(D_mel, dB_ref))/dB_ref)
+        D_mel_dB = 10.0 * np.log10(np.maximum(a_squere_min, np.minimum(D_mel, dB_ref)/dB_ref))
 
         return D_mel_dB
     
