@@ -4,7 +4,7 @@ This repository contains the software components developed as part of the master
 
 ## Thesis Supervision
 
-The thesis was supervised by **M.Sc. Celina Dettmering** from the **Institute for Machine Tools and Industrial Management (iwb)** of the Technical University of Munich.
+The thesis was supervised by **M.Sc. Celina Dettmering** from the **Institute for Machine Tools and Industrial Management (iwb)** of the **Technical University of Munich**.
 
 **Thesis Submission Date:** 30.11.2024
 
@@ -16,7 +16,7 @@ Through the supervision of **B.Sc. Máté Gábor Seidl** intellectual property o
 
 ### Dependencies
 
-To run this project, ensure you have the following installed:
+To run this project, the following installed have to be installed:
 
 - **PortAudio**
   ```bash
@@ -43,9 +43,9 @@ To run this project, ensure you have the following installed:
   - [Power to Decibel Conversion](https://librosa.org/doc/main/generated/librosa.power_to_db.html)
   - [Power to Decibel Implementation](https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db)
 
-- **Implementation Examples:**
+- **Thery and Implementation Examples:**
   - [Live Spectrogram Generation](https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py)
   - [Real-Time Sound Event Detection Using Spectrogram - SED During Badminton Play](https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb)
   - [Theory of Spectrogram and Mel Spectrogram and Visualization Using Python](https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0)
-  - [Audio Labs Erlangen Resources](https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html)
+  - [Audio Labs Erlangen - Audio Visualisation Using Python](https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html)
 
