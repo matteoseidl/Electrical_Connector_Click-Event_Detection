@@ -46,6 +46,20 @@ To run this project, install the followings:
     ```bash
     python setup.py
 
+## Folder Structure
+```
+<Project Folder Name>/
+└─── 01_Data/
+    └─── 01_audioDatasets/ (excluded from git)
+        ├─── 01_ethernet_without_additional_noise
+        ├─── 02_ethernet_with_additional_noise
+        ├─── ...
+        ├─── 07_noise_samples
+        ├─── [New dataset folders go here]
+    └─── clickDatasetPreprocessing.ipynb (current notebook)
+└─── ...
+```
+
 ## References
 
 - **Librosa Documentation:**
