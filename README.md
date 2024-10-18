@@ -16,7 +16,7 @@ Through the supervision of **B.Sc. Máté Gábor Seidl** intellectual property o
 
 ### Dependencies
 
-To run this project, the install the followings:
+To run this project, install the followings:
 
 - **PortAudio**
   ```bash
