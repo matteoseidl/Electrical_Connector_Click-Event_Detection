@@ -5,7 +5,7 @@ class spectrogramPlotter:
 
     ########################################################
     # plot the mel-spectrogram
-    def plot_single_wave_and_mel_spectrogram(signal, time, D_mel_dB, top_dB_abs, f_min, f_max, n_mels, sampling_rate):
+    def plot_single_wave_and_mel_spectrogram(self, signal, time, D_mel_dB, top_dB_abs, f_min, f_max, n_mels, sampling_rate):
 
         fig_x = 16
         fig_y = 6
