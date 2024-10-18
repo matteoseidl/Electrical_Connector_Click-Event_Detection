@@ -16,25 +16,31 @@ Through the supervision of **B.Sc. Máté Gábor Seidl** intellectual property o
 
 ### Dependencies
 
-To run this project, the following installed have to be installed:
+To run this project, the install the followings:
 
 - **PortAudio**
   ```bash
   sudo apt-get install portaudio19-dev
 
-### Python Virtual Environment
+### Python Virtual Environment (on Mac/Linux)
+1. Create a project folder in a selected location and navigate into it in the terminal:
+    ```bash
+    mkdir <project_name>
+    cd <project_name>
 
-1. Create a Python 3 virtual environment:
-   ```bash
-   python3 -m venv venv
+2. Create a Python 3 virtual environment:
+    ```bash
+    python3 -m venv venv
 
-2. Activate the virtual environment (on Mac/Linux):
+3. Activate the virtual environment:
     ```bash
     source venv/bin/activate
 
-3. Install the required Python packages:
+3. Copy the project files into the project folder:
+
+4. Install the required Python packages from the `requirements.txt` file in the project folder:
     ```bash
-    pip install pyaudio numpy matplotlib librosa PyQt5
+    pip install -r requirements.txt
 
 ## References
 
@@ -48,4 +54,10 @@ To run this project, the following installed have to be installed:
   - [Real-Time Sound Event Detection Using Spectrogram - SED During Badminton Play](https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb)
   - [Theory of Spectrogram and Mel Spectrogram and Visualization Using Python](https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0)
   - [Audio Labs Erlangen - Audio Visualisation Using Python](https://www.audiolabs-erlangen.de/resources/MIR/FMP/B/B_PythonVisualization.html)
+
+- **Variational Autoencoder implementations for data generation:**
+  - https://github.com/Jackson-Kang/Pytorch-VAE-tutorial/blob/master/01_Variational_AutoEncoder.ipynb 
+  - https://github.com/sksq96/pytorch-vae/blob/master/vae-cnn.ipynb
+  - https://www.tensorflow.org/tutorials/generative/cvae
+  - https://www.kaggle.com/code/darkrubiks/variational-autoencoder-with-pytorch
 
