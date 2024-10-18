@@ -36,7 +36,7 @@ To run this project, the install the followings:
     ```bash
     source venv/bin/activate
 
-3. Copy the project files into the project folder:
+3. Copy the project files into the project folder
 
 4. Install the required Python packages from the `requirements.txt` file in the project folder:
     ```bash
