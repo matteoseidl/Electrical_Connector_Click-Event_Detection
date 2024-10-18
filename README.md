@@ -48,16 +48,19 @@ To run this project, install the followings:
 
 ## Folder Structure
 ```
-<Project Folder Name>/
-└─── 01_Data/
-    └─── 01_audioDatasets/ (excluded from git)
+<Project Folder Name>
+└─── 01_Data
+    └─── 01_audioDatasets (excluded from git)
         ├─── 01_ethernet_without_additional_noise
         ├─── 02_ethernet_with_additional_noise
         ├─── ...
         ├─── 07_noise_samples
         ├─── [New dataset folders go here]
     └─── clickDatasetPreprocessing.ipynb (current notebook)
-└─── ...
+└─── 02_Data_Augmentation
+└─── 03_Click_Detection_Model
+└─── 04_Click_Detection_App
+└─── 05_Utilities
 ```
 
 ## References
