@@ -22,6 +22,10 @@ To run this project, install the followings:
   ```bash
   sudo apt-get install portaudio19-dev
 
+- **Python 3 -> check if it is installed**
+  ```bash
+  python3 --version
+
 ### Python Virtual Environment (on Mac/Linux)
 1. Create a project folder in a selected location and navigate into it in the terminal:
     ```bash
@@ -38,9 +42,9 @@ To run this project, install the followings:
 
 3. Copy the project files into the project folder
 
-4. Install the required Python packages from the `requirements.txt` file in the project folder:
+4. Setup required folder structure and install the required Python packages from the `requirements.txt` file in the project folder:
     ```bash
-    pip install -r requirements.txt
+    python setup.py
 
 ## References
 
