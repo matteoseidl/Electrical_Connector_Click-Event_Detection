@@ -55,3 +55,44 @@ class spectrogramPlotter:
         plt.show()
     ########################################################
 
+    ########################################################
+    # plot multiple spectrograms
+    def plot_multiple_mel_spectrograms(self, spectrograms_D_mel_dB, top_dB_abs, f_min, f_max, n_mels, num_spectrograms, num_cols):
+
+        if num_spectrograms % num_cols == 0:
+            num_rows = int(num_spectrograms / num_cols)
+        else:
+            num_rows = int(num_spectrograms / num_cols) + 1
+
+        fig, axs = plt.subplots(num_rows, num_cols, figsize=(12, num_rows * 2))
+
+        for i in range(num_spectrograms):
+            row = i // num_cols
+            col = i % num_cols
+
+            if num_rows == 1:
+                ax = axs[col]
+            else:
+                ax = axs[row, col]
+
+            spectrogram_id = i
+
+            spectrogram = spectrograms_D_mel_dB[spectrogram_id]
+
+            #ax = plt.subplot()
+            ax.set_xlabel('Time [s]')
+            ax.set_ylabel('Frequency [Hz]')
+            ax.axes.xaxis.set_ticklabels([]) 
+            mel_spec_img = ax.pcolormesh(np.linspace(0, spectrogram.shape[1], spectrogram.shape[1]),
+                                                    np.linspace(f_min, f_max, n_mels), 
+                                                    spectrogram, shading='auto', cmap='inferno')
+
+            #mel_spec_img.set_clim(vmin=-top_dB_abs, vmax=dB_ref)
+            mel_spec_img.set_clim(vmin=-top_dB_abs, vmax=0)
+
+        cbar_ax = fig.add_axes([0.15, -0.05, 0.7, 0.02])
+        fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
+
+        plt.tight_layout()
+        plt.show()
+
