@@ -36,3 +36,22 @@ class spectrogramPlotter:
         plt.show()
     ########################################################
 
+    ########################################################
+    # plot the signal interval around the peak time of the click event
+    def plot_signal_interval(self, signal, time, peak_time, interval):
+    
+        plt.figure(figsize=(16, 6))
+        plt.plot(time, signal)
+        plt.xlim(peak_time-interval, peak_time+interval)
+        
+        if peak_time is not None:
+            plt.axvline(x=peak_time, color='r', linestyle='--', label='Click Peak')
+            plt.legend()
+
+        plt.xlabel("Time (s)")
+        plt.ylabel("Amplitude")
+        plt.title("Audio Signal with Click Event Peak")
+        plt.tight_layout()
+        plt.show()
+    ########################################################
+
