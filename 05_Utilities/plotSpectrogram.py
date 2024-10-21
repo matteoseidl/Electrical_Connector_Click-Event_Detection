@@ -56,6 +56,26 @@ class spectrogramPlotter:
     ########################################################
 
     ########################################################
+    # plot signal interval with 2 peak times
+    def plot_signal_interval_with_2_peaks(self, signal, time, peak_time_1, peak_time_2, interval):
+        
+        plt.figure(figsize=(16, 6))
+        plt.plot(time, signal)
+        plt.xlim(peak_time_1-interval, peak_time_2+interval)
+        
+        if peak_time_1 is not None:
+            plt.axvline(x=peak_time_1, color='r', linestyle='--', label='Click Peak 1')
+            plt.axvline(x=peak_time_2, color='g', linestyle='--', label='Click Peak 2')
+            plt.legend()
+
+        plt.xlabel("Time (s)")
+        plt.ylabel("Amplitude")
+        plt.title("Audio Signal with Click Event Peaks")
+        plt.tight_layout()
+        plt.show()
+    ########################################################
+
+    ########################################################
     # plot single mel spectrogram
     def plot_single_mel_spectrogram(self, D_mel_dB, top_dB_abs, f_min, f_max, n_mels):
 
