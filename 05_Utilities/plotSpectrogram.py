@@ -56,6 +56,32 @@ class spectrogramPlotter:
     ########################################################
 
     ########################################################
+    # plot single mel spectrogram
+    def plot_single_mel_spectrogram(self, D_mel_dB, top_dB_abs, f_min, f_max, n_mels):
+
+        fig_x = 16
+        fig_y = 6
+        fig, ax = plt.subplots(1, 1, figsize=(fig_x, fig_y))
+
+        ax = plt.subplot()
+        ax.set_xlabel('Time [s]')
+        ax.set_ylabel('Frequency [Hz]')
+        ax.axes.xaxis.set_ticklabels([]) 
+        mel_spec_img = ax.pcolormesh(np.linspace(0, D_mel_dB.shape[1], D_mel_dB.shape[1]),
+                                                np.linspace(f_min, f_max, n_mels), 
+                                                D_mel_dB, shading='auto', cmap='inferno')
+
+        #mel_spec_img.set_clim(vmin=-top_dB_abs, vmax=dB_ref)
+        mel_spec_img.set_clim(vmin=-top_dB_abs, vmax=0)
+
+        cbar_ax = fig.add_axes([0.15, -0.05, 0.7, 0.02])
+        fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
+
+    plt.show()
+
+    ########################################################
+
+    ########################################################
     # plot multiple spectrograms
     def plot_multiple_mel_spectrograms(self, spectrograms_D_mel_dB, top_dB_abs, f_min, f_max, n_mels, num_spectrograms, num_cols):
 
