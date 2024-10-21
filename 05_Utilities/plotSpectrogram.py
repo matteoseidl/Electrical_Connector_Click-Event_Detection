@@ -67,7 +67,7 @@ class spectrogramPlotter:
         
         if peak_time_1 is not None:
             plt.axvline(x=peak_time_1, color='r', linestyle='--', label='Click Peak 1')
-            plt.axvline(x=peak_time_2, color='g', linestyle='--', label='Click Peak 2')
+            plt.axvline(x=peak_time_2, color='r', linestyle='--', label='Click Peak 2')
             plt.legend()
 
         plt.xlabel("Time (s)")
