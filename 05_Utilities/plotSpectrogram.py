@@ -61,7 +61,9 @@ class spectrogramPlotter:
         
         plt.figure(figsize=(16, 6))
         plt.plot(time, signal)
-        plt.xlim(peak_time_1-interval, peak_time_2+interval)
+        print(interval)
+        print((peak_time_1+peak_time_2)/2-interval, (peak_time_1+peak_time_2)/2+interval)
+        plt.xlim((peak_time_1+peak_time_2)/2-interval, (peak_time_1+peak_time_2)/2+interval)
         
         if peak_time_1 is not None:
             plt.axvline(x=peak_time_1, color='r', linestyle='--', label='Click Peak 1')
