@@ -52,7 +52,7 @@ class ClickDetector:
     
     def detection(self, model, spec_chunk):
         model.eval()
-        binary_threshold = 0.6 # threshold for binary classification
+        binary_threshold = 0.5 # threshold for binary classification
         with torch.inference_mode():
             model_prediction = model(spec_chunk)
             model_prediction = torch.squeeze(model_prediction)
