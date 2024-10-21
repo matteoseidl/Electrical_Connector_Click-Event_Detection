@@ -23,7 +23,7 @@ format = pyaudio.paFloat32 # for librosa audio data must be floating-point
 # path to the model architecture and weights
 model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
 selected_model = "ClickDetectorCNN_v1"
-model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_3.pt"
+model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_4.pt"
 
 class ClickSense:
     def __init__(self):
