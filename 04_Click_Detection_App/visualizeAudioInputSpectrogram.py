@@ -14,6 +14,8 @@ class AudioSpectrogramPlotter:
         self.model = click_sense.model
         self.detector = click_sense.detector
 
+        self.window_size = click_sense.window_size
+
         # setup plot parameters
         self.fig = fig
         self.ax = ax
@@ -124,9 +126,15 @@ class AudioSpectrogramPlotter:
         self.mel_spec_img.set_array(self.melspec_full.ravel())
 
     def detect_click(self):
-        spectrogram_chunk = self.melspec_full[:, -32:] # take only the last 32 columns for detection from the fill 128 in the plot
+        spectrogram_chunk = self.melspec_full[:, -self.window_size:] # take only the last 32 or 64 columns for detection from the fill 128 in the plot
 
-        if self.detection_counter > self.chunks_per_plot/4: # wait for 4 plot updates at the beginning before starting detection
+        update_without_detection = None
+        if self.window_size == 32:
+            update_without_detection = 4
+        elif self.window_size == 64:
+            update_without_detection = 8
+
+        if self.detection_counter >= update_without_detection: # wait for 4 plot updates at the beginning before starting detection
 
             spectrogram_chunk_norm = self.detector.normalize_spec_chunk(spectrogram_chunk) # normalize the spectrogram chunk
             spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm) # convert to torch tensor
