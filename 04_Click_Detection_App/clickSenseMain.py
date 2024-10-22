@@ -33,9 +33,6 @@ else:
 selected_model = "ClickDetectorCNN_v1"
 model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_5.pt"
 
-
-
-
 class ClickSense:
     def __init__(self):
         self.p = pyaudio.PyAudio() # instantiate PyAudio for audio capture
