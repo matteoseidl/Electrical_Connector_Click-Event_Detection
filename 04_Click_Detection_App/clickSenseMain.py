@@ -20,10 +20,21 @@ sampling_rate_orig = 48000 # original sampling rate of the microphone, defined b
 channels = 1
 format = pyaudio.paFloat32 # for librosa audio data must be floating-point
 
+long_window = True
+
 # path to the model architecture and weights
 model_architectures_dir = "03_Click_Detection_Model/01_modelArchitectures"
+
+if long_window:
+    selected_model = "ClickDetectorCNN_v1_long_window"
+else:
+    selected_model = "ClickDetectorCNN_v1"
+
 selected_model = "ClickDetectorCNN_v1"
 model_weights_path = "03_Click_Detection_Model/02_savedWeights/ethernet_det_model_5.pt"
+
+
+
 
 class ClickSense:
     def __init__(self):
@@ -43,6 +54,11 @@ class ClickSense:
         
         self.detector = ClickDetector() # instantiate ClickDetector class
         self.model = self.detector.load_model(model_architectures_dir, selected_model, model_weights_path) # load model with weights
+
+        if long_window:
+            self.window_size = 64
+        else:
+            self.window_size = 32
 
     def start_recording(self):
         self.stream = self.p.open(

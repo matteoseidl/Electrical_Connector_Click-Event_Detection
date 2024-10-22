@@ -3,7 +3,7 @@
 import torch
 from torch import nn
 
-class ClickDetectorCNN(nn.Module):
+class ClickDetectorCNNlong(nn.Module):
     def __init__(self, input_channels, output_shape):
         super().__init__()
         self.block_1 = nn.Sequential(
