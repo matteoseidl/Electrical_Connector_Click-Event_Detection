@@ -28,7 +28,7 @@ for directory in directories:
 
 print("Required directories created!")
 
-# check if requirements.txt exists
+"""# check if requirements.txt exists
 if os.path.exists('requirements.txt'):
     # install dependencies from requirements.txt
     try:
@@ -38,4 +38,4 @@ if os.path.exists('requirements.txt'):
     except subprocess.CalledProcessError as e:
         print(f"Error installing dependencies: {e}")
 else:
-    print("requirements.txt not found. Required dependency are not installed.")
+    print("requirements.txt not found. Required dependency are not installed.")"""
