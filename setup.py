@@ -7,7 +7,7 @@ directories = [
     '01_Dataset/01_ethernet_without_additional_noise',
     '01_Dataset/01_audioDatasets/02_ethernet_with_additional_noise',
 
-    '02_Data_Augmentation/01_generated_datasets',
+    '02_Data_Augmentation/01_augmented_datasets',
 
     '03_Click_Detection_Model/02_savedWeights',
 ]
