@@ -17,5 +17,5 @@ class sharedValuesConfig:
     ## --> therfore, 14 kHz was chosen as the maximum frequency
 
     DB_REF = 1e3 ## reference value for dB conversion --> value from analysing the dataset
-    A_SQUER_MIN = 1e-12 ## larger than 0 to avoid log(0)  --> value from analysing the dataset
-    TOP_DB_ABS = abs(10*np.log10(A_SQUER_MIN)) ## maximum dB value -> 10*log(a_squere_min) = -120
+    A_SQUERE_MIN = 1e-12 ## larger than 0 to avoid log(0)  --> value from analysing the dataset
+    TOP_DB_ABS = abs(10*np.log10(A_SQUERE_MIN)) ## maximum dB value -> 10*log(a_squere_min) = -120
