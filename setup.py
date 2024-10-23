@@ -27,15 +27,3 @@ for directory in directories:
     os.makedirs(directory, exist_ok=True)
 
 print("Required directories created!")
-
-# check if requirements.txt exists
-if os.path.exists('requirements.txt'):
-    # install dependencies from requirements.txt
-    try:
-        print("Installing dependencies from requirements.txt...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
-        print("Dependencies installed successfully!")
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing dependencies: {e}")
-else:
-    print("requirements.txt not found. Required dependency are not installed.")
