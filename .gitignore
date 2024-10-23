@@ -5,6 +5,7 @@
 01_Dataset/01_audioDatasets
 
 02_Data_Augmentation/01_augmented_datasets
+02_Data_Augmentation/01_augmentedDatasets
 
 03_Click_Detection_Model/02_savedWeights
 
