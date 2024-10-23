@@ -82,3 +82,7 @@ To run this project, install the followings:
   - https://www.tensorflow.org/tutorials/generative/cvae
   - https://www.kaggle.com/code/darkrubiks/variational-autoencoder-with-pytorch
 
+- **ML training**
+  - [How to use Learning Curves to Diagnose Machine Learning Model Performance](How to use Learning Curves to Diagnose Machine Learning Model Performance)
+  - [Introduction to Deep Learning (I2DL 2023) course by Matthias Niessner] (https://www.youtube.com/watch?v=piSpPhPmPBU&list=PLQ8Y4kIIbzy_pGm2QAwF625E6nmcRu2sU&pp=iAQB)
+
