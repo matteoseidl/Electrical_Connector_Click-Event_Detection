@@ -17,7 +17,7 @@ class ClickDetectorCNN(nn.Module):
         )
         self.block_2 = nn.Sequential(
             nn.Conv2d(in_channels=128, 
-                      out_channels=64, 
+                      out_channels=128, 
                       kernel_size=3,
                       stride=1,
                       padding="same"),
