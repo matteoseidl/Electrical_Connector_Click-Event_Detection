@@ -24,7 +24,10 @@ directories = [
 
 # create the directories if they do not exist
 for directory in directories:
-    os.makedirs(directory, exist_ok=True)
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+    else:
+        print(f"{directory} already exists.")
 
 print("Required directories created!")
 
