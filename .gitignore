@@ -8,6 +8,7 @@
 02_Data_Augmentation/01_augmentedDatasets
 
 03_Click_Detection_Model/02_savedWeights
+03_Click_Detection_Model/03_trainingResults
 
 # automatically generated files
 .DS_Store
