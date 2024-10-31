@@ -56,6 +56,8 @@ class AudioSpectrogramPlotter:
         self.f_min = 20
         self.f_max = 14000
         self.mel_filter_bank = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=self.n_mels, fmin=self.f_min, fmax=self.f_max, htk=True, norm=1)
+
+        self.old_mic_input = np.zeros(self.chunk_size).astype(np.float32)
         
     def initialize_plot(self):
         self.chunks_per_plot = self.click_sense.chunks_per_plot
@@ -95,9 +97,8 @@ class AudioSpectrogramPlotter:
 
         return D_mel_dB
     
-    def process_audio_data(self, mic_input):
-        chunk_stft = librosa.stft(mic_input, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft, center = False)
-        
+    def process_audio_data(self, signal):
+        chunk_stft = librosa.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft, center = False)
         D = np.abs(chunk_stft) ** 2
         D_mel = np.dot(self.mel_filter_bank, D)
         D_mel_dB = self.power_mel_to_db(D_mel, a_squere_min=self.a_squere_min, dB_ref=self.dB_ref)
@@ -105,21 +106,39 @@ class AudioSpectrogramPlotter:
         return D_mel_dB
 
     def update(self):
-        mic_input = self.click_sense.get_mic_input()
-        if mic_input is None:
+        new_mic_input = self.click_sense.get_mic_input()
+        if new_mic_input is None:
             return
         
+        print(f"new mic input received with shape: {new_mic_input.shape}")
+
+        mid_mic_signal = np.concatenate((self.old_mic_input[(self.chunk_size//2):], new_mic_input[:(self.chunk_size//2)]))
+
+        print(f"mid signal shape: {mid_mic_signal.shape}")
+        print(f"mid signal first value type: {type(mid_mic_signal[0])}")
+        
         # padding
-        mic_input = np.pad(signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
+        new_mic_input_padded = np.pad(new_mic_input, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
+        print(f"new mic input received with shape after padding: {new_mic_input_padded.shape}")
+        print(f"new mic input first value type: {type(new_mic_input_padded[0])}")
+
+        mid_mic_signal_padded = np.pad(mid_mic_signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
+        print(f"mid signal shape after padding: {mid_mic_signal_padded.shape}")
         
         # process audio data
-        D_mel_dB = self.process_audio_data(mic_input)
+        D_mel_dB_new = self.process_audio_data(new_mic_input_padded)
+        D_mel_dB_mid = self.process_audio_data(mid_mic_signal_padded)
+
+        new_spectrogram_chunk = np.concatenate((D_mel_dB_mid[:, 3:5], D_mel_dB_new[:, 1:7]), axis=1)
+        print(new_spectrogram_chunk.shape)
         
         # update spectrogram
-        self.update_spectrogram(D_mel_dB)
+        self.update_spectrogram(new_spectrogram_chunk)
         
         # perform click detection
         self.detection_res = self.detect_click()
+
+        self.old_mic_input = new_mic_input
 
         # return the detection result to the gui
         return self.detection_res
