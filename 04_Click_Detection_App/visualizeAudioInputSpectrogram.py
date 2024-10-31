@@ -109,28 +109,21 @@ class AudioSpectrogramPlotter:
         new_mic_input = self.click_sense.get_mic_input()
         if new_mic_input is None:
             return
-        
-        print(f"new mic input received with shape: {new_mic_input.shape}")
 
         mid_mic_signal = np.concatenate((self.old_mic_input[(self.chunk_size//2):], new_mic_input[:(self.chunk_size//2)]))
 
-        print(f"mid signal shape: {mid_mic_signal.shape}")
-        print(f"mid signal first value type: {type(mid_mic_signal[0])}")
         
         # padding
         new_mic_input_padded = np.pad(new_mic_input, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
-        print(f"new mic input received with shape after padding: {new_mic_input_padded.shape}")
-        print(f"new mic input first value type: {type(new_mic_input_padded[0])}")
 
         mid_mic_signal_padded = np.pad(mid_mic_signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
-        print(f"mid signal shape after padding: {mid_mic_signal_padded.shape}")
+        
         
         # process audio data
         D_mel_dB_new = self.process_audio_data(new_mic_input_padded)
         D_mel_dB_mid = self.process_audio_data(mid_mic_signal_padded)
 
         new_spectrogram_chunk = np.concatenate((D_mel_dB_mid[:, 3:5], D_mel_dB_new[:, 1:7]), axis=1)
-        print(new_spectrogram_chunk.shape)
         
         # update spectrogram
         self.update_spectrogram(new_spectrogram_chunk)
@@ -143,9 +136,9 @@ class AudioSpectrogramPlotter:
         # return the detection result to the gui
         return self.detection_res
 
-    def update_spectrogram(self, D_mel_dB):
-        self.melspec_full = np.roll(self.melspec_full, -D_mel_dB.shape[1], axis=1)
-        self.melspec_full[:, -D_mel_dB.shape[1]:] = D_mel_dB
+    def update_spectrogram(self, new_spectrogram_chunk):
+        self.melspec_full = np.roll(self.melspec_full, -new_spectrogram_chunk.shape[1], axis=1)
+        self.melspec_full[:, -new_spectrogram_chunk.shape[1]:] = new_spectrogram_chunk
         self.mel_spec_img.set_array(self.melspec_full.ravel())
 
     def detect_click(self):
