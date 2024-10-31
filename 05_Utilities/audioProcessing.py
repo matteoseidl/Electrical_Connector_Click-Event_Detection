@@ -58,9 +58,12 @@ class processAudio:
 
         n_fft = self.next_power_of_2(hop_length) ## length of the windowed signal after padding with zeros
 
+        # padding signal on both sides with hop_length/2 * zeros -> important in stft calculation for chunks
+        signal = np.pad(signal, (hop_length//2, hop_length//2), 'constant', constant_values=(0, 0))
+
         ## Short-Time Fourier Transform (STFT) to get the signal's spectrum
         ## time-frequency representation of the signal, the values in the matrix are the amplitude values of the frequencies at the given time
-        signal_stft = librosa.stft(signal, n_fft=n_fft, hop_length=hop_length, win_length=n_fft)
+        signal_stft = librosa.stft(signal, n_fft=n_fft, hop_length=hop_length, win_length=n_fft, center = False)
 
         ## calculate the power spectrogram
         ## I = c * A^2, where c is a constant, A is the amplitude, I is the intensity (Roberts 1984)

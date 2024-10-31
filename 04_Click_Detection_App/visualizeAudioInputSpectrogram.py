@@ -96,7 +96,8 @@ class AudioSpectrogramPlotter:
         return D_mel_dB
     
     def process_audio_data(self, mic_input):
-        chunk_stft = librosa.stft(mic_input, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft)
+        chunk_stft = librosa.stft(mic_input, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft, center = False)
+        
         D = np.abs(chunk_stft) ** 2
         D_mel = np.dot(self.mel_filter_bank, D)
         D_mel_dB = self.power_mel_to_db(D_mel, a_squere_min=self.a_squere_min, dB_ref=self.dB_ref)
@@ -107,6 +108,9 @@ class AudioSpectrogramPlotter:
         mic_input = self.click_sense.get_mic_input()
         if mic_input is None:
             return
+        
+        # padding
+        mic_input = np.pad(signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
         
         # process audio data
         D_mel_dB = self.process_audio_data(mic_input)
