@@ -100,7 +100,6 @@ class spectrogramPlotter:
         fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
 
     plt.show()
-
     ########################################################
 
     ########################################################
