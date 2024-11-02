@@ -59,16 +59,19 @@ class processAudio:
         n_fft = self.next_power_of_2(hop_length) ## length of the windowed signal after padding with zeros
 
         # padding signal on both sides with hop_length/2 * zeros -> important in stft calculation for chunks
-        signal_padded = np.pad(signal, (hop_length//2, hop_length//2), 'constant', constant_values=(0, 0))
+        #signal_padded = np.pad(signal, (hop_length//2, hop_length//2), 'constant', constant_values=(0, 0))
         
         ## Short-Time Fourier Transform (STFT) to get the signal's spectrum
         ## time-frequency representation of the signal, the values in the matrix are the amplitude values of the frequencies at the given time
-        signal_stft = librosa.stft(signal_padded, n_fft=n_fft, hop_length=hop_length, win_length=n_fft, center = False)
+        signal_stft = librosa.stft(signal, n_fft=n_fft, hop_length=hop_length, win_length=n_fft, center = True)
 
         ## calculate the power spectrogram
         ## I = c * A^2, where c is a constant, A is the amplitude, I is the intensity (Roberts 1984)
         ## D = |STFT|^2 = |A|^2, the values in the matrix are proportional with the power values of the frequencies at the given time
         D = np.abs(signal_stft) ** 2
+
+        # print the maximum value in the power spectrogram
+        print(f"Max value in the power spectrogram: {np.max(D)}")
 
         ## creating the mel filter bank for mel-scaled spectrogram generation
         mel_filter_bank = librosa.filters.mel(sr=sampling_rate, n_fft=n_fft, n_mels=n_mels, fmin=f_min, fmax = f_max, htk=True, norm = 1) 

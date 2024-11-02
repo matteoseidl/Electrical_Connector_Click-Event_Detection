@@ -10,6 +10,8 @@
 03_Click_Detection_Model/02_savedWeights
 03_Click_Detection_Model/03_trainingResults
 
+click_detection_times.csv
+
 # automatically generated files
 .DS_Store
 __pycache__

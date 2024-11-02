@@ -98,8 +98,8 @@ class AudioSpectrogramPlotter:
         return D_mel_dB
     
     def process_audio_data(self, signal):
-        signal = np.pad(signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
-        chunk_stft = librosa.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft, center = False)
+        #signal = np.pad(signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
+        chunk_stft = librosa.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft, center = True)
         D = np.abs(chunk_stft) ** 2
         D_mel = np.dot(self.mel_filter_bank, D)
         D_mel_dB = self.power_mel_to_db(D_mel, a_squere_min=self.a_squere_min, dB_ref=self.dB_ref)
@@ -124,7 +124,7 @@ class AudioSpectrogramPlotter:
         D_mel_dB_new = self.process_audio_data(new_mic_input)
         D_mel_dB_mid = self.process_audio_data(mid_mic_signal)
 
-        new_spectrogram_chunk = np.concatenate((D_mel_dB_mid[:, 3:5], D_mel_dB_new[:, 1:7]), axis=1)
+        new_spectrogram_chunk = np.concatenate((D_mel_dB_mid[:, 4:5], D_mel_dB_new[:, 1:8]), axis=1)
         
         # update spectrogram
         self.update_spectrogram(new_spectrogram_chunk)

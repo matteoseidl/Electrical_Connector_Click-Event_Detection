@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.ticker as ticker
 import threading
 import time
+from datetime import datetime
 
 from clickSenseMain import ClickSense
 from visualizeAudioInputSpectrogram import AudioSpectrogramPlotter
@@ -88,9 +89,11 @@ class ClickDetectorGUI(QMainWindow):
 
 
     # save the detection time in a csv file
-    def save_detection_time():
+    def save_detection_time(self):
         with open("click_detection_times.csv", "a") as file:
-            file.write(f"{time.time()}\n")
+            current_time = time.time()
+            detection_time = datetime.fromtimestamp(current_time).strftime("%Y.%m.%d %H:%M:%S")
+            file.write(f"{detection_time }\n")
     
     def update_plot(self):
         if self.plotter:
