@@ -70,9 +70,6 @@ class processAudio:
         ## D = |STFT|^2 = |A|^2, the values in the matrix are proportional with the power values of the frequencies at the given time
         D = np.abs(signal_stft) ** 2
 
-        # print the maximum value in the power spectrogram
-        print(f"Max value in the power spectrogram: {np.max(D)}")
-
         ## creating the mel filter bank for mel-scaled spectrogram generation
         mel_filter_bank = librosa.filters.mel(sr=sampling_rate, n_fft=n_fft, n_mels=n_mels, fmin=f_min, fmax = f_max, htk=True, norm = 1) 
         ## --> if norm = 1 -> filters are normalized to sum to 1
