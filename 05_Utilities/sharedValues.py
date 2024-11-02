@@ -40,3 +40,7 @@ class sharedValuesConfig:
     WINDOW_SIZE_LONG = int(WINDOW_SIZE_SEC_LONG/RESOLUTION) ## in this case 64, number of spectrogram columns in the window
 
     ########################################################
+    # Audio plotting
+
+    CHUNKS_PER_PLOT = 16
+    SAMPLES_PER_PLOT = CHUNK_SIZE * CHUNKS_PER_PLOT

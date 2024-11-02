@@ -44,13 +44,17 @@ class processAudio:
     # calculate the dB-scaled mel-spectrogram
 
     ## audio_file_path - path to the audio file, sampling_rate - sampling rate of the audio file, hop_length - hop length for the STFT calculation
-    def get_mel_spectrogram(self, audio_file_path, sampling_rate, hop_length, n_mels, f_min, f_max, a_squere_min, dB_ref):
+    def get_mel_spectrogram(self, audio_file, sampling_rate, hop_length, n_mels, f_min, f_max, a_squere_min, dB_ref):
 
         ## initialize the dB-scaled mel-spectrogram as None
         D_mel_dB = None
         
-        ## load the audio file, get the signal's wave form
-        signal, sampling_rate = librosa.load(audio_file_path, sr=sampling_rate)
+        # if audio_file type == str, load the audio file
+        if type(audio_file) == str:
+            ## load the audio file, get the signal's wave form
+            signal, sampling_rate = librosa.load(audio_file, sr=sampling_rate)
+        else:
+            signal = audio_file
 
         n_samples = len(signal) ## number of all samples in the signal
         duration = n_samples / sampling_rate ## duration of the signal in seconds
@@ -85,4 +89,6 @@ class processAudio:
 
         return signal, time, D_mel, D_mel_dB
     ########################################################
+
+    
         
