@@ -12,6 +12,8 @@
 
 click_detection_times.csv
 
+06_Detection_Test/01_testResults
+
 # automatically generated files
 .DS_Store
 __pycache__
