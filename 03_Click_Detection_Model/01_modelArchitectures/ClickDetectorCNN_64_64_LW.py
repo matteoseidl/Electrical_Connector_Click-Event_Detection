@@ -1,4 +1,4 @@
-# CNN model for click detection for 64, 64 channels, long window
+# CNN model for click detection for 64, 128 channels, long window
 
 import torch
 from torch import nn
@@ -17,7 +17,7 @@ class ClickDetectorCNN(nn.Module):
         )
         self.block_2 = nn.Sequential(
             nn.Conv2d(in_channels=64, 
-                      out_channels=64, 
+                      out_channels=128, 
                       kernel_size=3,
                       stride=1,
                       padding="same"),
@@ -26,7 +26,7 @@ class ClickDetectorCNN(nn.Module):
         )
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(in_features=64 * 16 * 32,
+            nn.Linear(in_features=128 * 16 * 32,
                       out_features=output_shape),
             nn.Sigmoid()
         )
