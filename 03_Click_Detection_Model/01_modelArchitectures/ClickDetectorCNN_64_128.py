@@ -1,4 +1,4 @@
-# CNN model for click detection channels: 128, 128
+# CNN model for click detection for 64, 128
 
 import torch
 from torch import nn
