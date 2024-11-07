@@ -12,6 +12,8 @@
 
 06_Detection_Test/01_testResults
 
+plots_for_documentation.ipynb
+
 # automatically generated files
 .DS_Store
 __pycache__
