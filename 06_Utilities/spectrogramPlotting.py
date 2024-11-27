@@ -32,7 +32,7 @@ class spectrogramPlotter:
         ax1.plot(time, signal)
         #ax1.set_xlim(left=0, right=time[-1])
         ax1.set_ylabel('Amplitude [-]')
-        #ax1.set_xlim(left=time[0], right=time[-1])
+        ax1.set_xlim(left=time[0], right=time[-1])
         ax1.axes.xaxis.set_ticklabels([])
         ax1.yaxis.set_label_coords(-0.117, 0.5) 
         
@@ -42,7 +42,7 @@ class spectrogramPlotter:
         ax2.set_xlabel('Time [s]')
         ax2.set_ylabel('Frequency [Hz]')
 
-        ax1.set_xlim(left=time[0], right=time[-1])
+        #ax2.set_xlim(left=time[0], right=time[-1])
         #ax2.axes.xaxis.set_ticklabels([]) 
         mel_spec_img = ax2.pcolormesh(np.linspace(0, signal.shape[0] / sampling_rate, D_mel_dB.shape[1]),
                                                 np.linspace(f_min, f_max, n_mels), 
@@ -59,7 +59,7 @@ class spectrogramPlotter:
         ax2.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
         ax2.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
 
-        ax2.set_xticks(np.arange(0, time[-1], 5))
+        #ax2.set_xticks(np.arange(0, time[-1], 5))
 
         plt.show()
     ########################################################
