@@ -118,25 +118,6 @@ class spectrogramPlotter:
         ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
         plt.show()
-
-
-        
-        """plt.figure(figsize=(16, 6))
-        plt.plot(time, signal)
-        print(interval)
-        print((peak_time_1+peak_time_2)/2-interval, (peak_time_1+peak_time_2)/2+interval)
-        plt.xlim((peak_time_1+peak_time_2)/2-interval, (peak_time_1+peak_time_2)/2+interval)
-        
-        if peak_time_1 is not None:
-            plt.axvline(x=peak_time_1, color='r', linestyle='--', label='Click Peak 1')
-            plt.axvline(x=peak_time_2, color='r', linestyle='--', label='Click Peak 2')
-            plt.legend()
-
-        plt.xlabel("Time (s)")
-        plt.ylabel("Amplitude")
-        plt.title("Audio Signal with Click Event Peaks")
-        plt.tight_layout()
-        plt.show()"""
     ########################################################
 
     ########################################################
@@ -162,7 +143,6 @@ class spectrogramPlotter:
         fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
 
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-        ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
         plt.show()
     ########################################################
