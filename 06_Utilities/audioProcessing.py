@@ -24,19 +24,19 @@ class processAudio:
     ########################################################
     # function to convert power mel-spectrogram to dB-scaled mel-spectrogram
 
-    ## D_mel - power mel-spectrogram, a_squere_min - minimum value for the power, dB_ref - reference value for dB scaling
-    def power_mel_to_db(self, D_mel, a_squere_min, dB_ref):
+    ## D_mel - power mel-spectrogram, d_min - minimum value for the power, d_ref - reference value for dB scaling
+    def power_mel_to_db(self, D_mel, d_min, d_ref):
 
-        D_mel_dB = 10.0 * np.log10(np.maximum(a_squere_min, np.minimum(D_mel, dB_ref)/dB_ref))
+        D_mel_dB = 10.0 * np.log10(np.maximum(d_min, np.minimum(D_mel, d_ref)/d_ref))
 
         ## Dynamic range from -120 dB to 0 dB 
         ## 0 dB as reference level -> log_10(1) = 0 -> values inside the log should be smaller or equal to 1
-        ## --> values over dB_ref are set to dB_ref --> np.minimum(D_mel, dB_ref)
+        ## --> values over d_ref are set to d_ref --> np.minimum(D_mel, d_ref)
         ## -120 dB as the minimum possible dB value -> log_10(1e-12) -> values inside the log should be larger or equal to 1e-12
-        ## --> values under a_square_min are set to a_square_min --> np.maximum(a_squere_min, np.minimum(D_mel, dB_ref)
+        ## --> values under a_square_min are set to a_square_min --> np.maximum(d_min, np.minimum(D_mel, d_ref)
 
         ## also tried with linear mapping, but this results in worse resolution for small values
-        ## -> D_mel_dB = -120 + (120/dB_ref) * np.maximum(a_square_min, np.minimum(D_mel, dB_ref)) 
+        ## -> D_mel_dB = -120 + (120/d_ref) * np.maximum(a_square_min, np.minimum(D_mel, d_ref)) 
 
         return D_mel_dB
 
@@ -44,7 +44,7 @@ class processAudio:
     # calculate the dB-scaled mel-spectrogram
 
     ## audio_file_path - path to the audio file, sampling_rate - sampling rate of the audio file, hop_length - hop length for the STFT calculation
-    def get_mel_spectrogram(self, audio_file, sampling_rate, hop_length, n_mels, f_min, f_max, a_squere_min, dB_ref):
+    def get_mel_spectrogram(self, audio_file, sampling_rate, hop_length, n_mels, f_min, f_max, d_min, d_ref):
 
         ## initialize the dB-scaled mel-spectrogram as None
         D_mel_dB = None
@@ -83,9 +83,9 @@ class processAudio:
         D_mel = np.dot(mel_filter_bank, D)
         
         ## if the minimum value for the power and the reference value for dB scaling are given, calculate the dB-scaled mel-spectrogram
-        if a_squere_min != None and dB_ref != None:
+        if d_min != None and d_ref != None:
 
-            D_mel_dB = self.power_mel_to_db(D_mel, a_squere_min=a_squere_min, dB_ref=dB_ref)
+            D_mel_dB = self.power_mel_to_db(D_mel, d_min=d_min, d_ref=d_ref)
 
         return signal, time, D_mel, D_mel_dB
     ########################################################
