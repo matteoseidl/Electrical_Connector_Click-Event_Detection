@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 
 class spectrogramPlotter:
 
@@ -14,11 +15,12 @@ class spectrogramPlotter:
         'ytick.labelsize': 8
     })
 
+    global cm_to_inch
+    cm_to_inch = 2.54
+
     ########################################################
     # plot the mel-spectrogram
     def plot_single_wave_and_mel_spectrogram(self, signal, time, D_mel_dB, top_dB_abs, f_min, f_max, n_mels, sampling_rate):
-
-        cm_to_inch = 2.54
 
         fig_x = 14/cm_to_inch
         fig_y = 8/cm_to_inch
@@ -33,11 +35,13 @@ class spectrogramPlotter:
         #ax1.set_xlim(left=time[0], right=time[-1])
         ax1.axes.xaxis.set_ticklabels([])
         ax1.yaxis.set_label_coords(-0.117, 0.5) 
+        
 
         # plot mel-spectrogram
         ax2 = plt.subplot(2, 1, 2)
         ax2.set_xlabel('Time [s]')
         ax2.set_ylabel('Frequency [Hz]')
+
         ax1.set_xlim(left=time[0], right=time[-1])
         #ax2.axes.xaxis.set_ticklabels([]) 
         mel_spec_img = ax2.pcolormesh(np.linspace(0, signal.shape[0] / sampling_rate, D_mel_dB.shape[1]),
@@ -50,33 +54,74 @@ class spectrogramPlotter:
         cbar_ax = fig.add_axes([0.15, -0.08, 0.7, 0.02])
         fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
 
+        ax1.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        #ax1.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+        ax2.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+        ax2.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+
+        ax2.set_xticks(np.arange(0, time[-1], 5))
+
         plt.show()
     ########################################################
 
     ########################################################
     # plot the signal interval around the peak time of the click event
     def plot_signal_interval(self, signal, time, peak_time, interval):
-    
-        plt.figure(figsize=(16, 6))
-        plt.plot(time, signal)
-        plt.xlim(peak_time-interval, peak_time+interval)
-        
-        if peak_time is not None:
-            plt.axvline(x=peak_time, color='r', linestyle='--', label='Click Peak')
-            plt.legend()
 
-        plt.xlabel("Time (s)")
-        plt.ylabel("Amplitude")
-        plt.title("Audio Signal with Click Event Peak")
-        plt.tight_layout()
+        fig_x = 14/cm_to_inch
+        fig_y = 8/cm_to_inch
+
+        fig, ax = plt.subplots(1, 1, figsize=(fig_x, fig_y))
+
+        ax = plt.subplot(1, 1, 1)
+        ax.plot(time, signal)
+        #ax1.set_xlim(left=0, right=time[-1])
+        ax.set_ylabel('Amplitude [-]')
+        ax.set_xlim(left=peak_time-interval, right=peak_time+interval)
+
+        if peak_time is not None:
+            ax.axvline(x=peak_time, color='r', linestyle='--', label='Click event')
+            ax.legend()
+        
+        ax.set_xlabel('Time [s]')
+
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
         plt.show()
+    
     ########################################################
 
     ########################################################
     # plot signal interval with 2 peak times
     def plot_signal_interval_with_2_peaks(self, signal, time, peak_time_1, peak_time_2, interval):
+
+        fig_x = 14/cm_to_inch
+        fig_y = 8/cm_to_inch
+        fig, ax = plt.subplots(1, 1, figsize=(fig_x, fig_y))
+
+
+        ax = plt.subplot(1, 1, 1)
+        ax.plot(time, signal)
+        #ax1.set_xlim(left=0, right=time[-1])
+        ax.set_ylabel('Amplitude [-]')
+        ax.set_xlim(left=(peak_time_1+peak_time_2)/2-interval, right=(peak_time_1+peak_time_2)/2+interval)
+
+        if peak_time_1 is not None:
+            ax.axvline(x=peak_time_1, color='limegreen', linestyle='--', label='Click event 2')
+            ax.axvline(x=peak_time_2, color='r', linestyle='--', label='Click event 1')
+            ax.legend()
         
-        plt.figure(figsize=(16, 6))
+        ax.set_xlabel('Time [s]')
+
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
+        plt.show()
+
+
+        
+        """plt.figure(figsize=(16, 6))
         plt.plot(time, signal)
         print(interval)
         print((peak_time_1+peak_time_2)/2-interval, (peak_time_1+peak_time_2)/2+interval)
@@ -91,15 +136,15 @@ class spectrogramPlotter:
         plt.ylabel("Amplitude")
         plt.title("Audio Signal with Click Event Peaks")
         plt.tight_layout()
-        plt.show()
+        plt.show()"""
     ########################################################
 
     ########################################################
     # plot single mel spectrogram
     def plot_single_mel_spectrogram(self, D_mel_dB, top_dB_abs, f_min, f_max, n_mels):
 
-        fig_x = 16
-        fig_y = 6
+        fig_x = 14/cm_to_inch
+        fig_y = 8/cm_to_inch
         fig, ax = plt.subplots(1, 1, figsize=(fig_x, fig_y))
 
         ax = plt.subplot()
@@ -116,7 +161,10 @@ class spectrogramPlotter:
         cbar_ax = fig.add_axes([0.15, -0.05, 0.7, 0.02])
         fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
 
-    plt.show()
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
+        plt.show()
     ########################################################
 
     ########################################################
@@ -156,6 +204,9 @@ class spectrogramPlotter:
 
         cbar_ax = fig.add_axes([0.15, -0.05, 0.7, 0.02])
         fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
+
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
         plt.tight_layout()
         plt.show()

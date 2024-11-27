@@ -87,7 +87,7 @@ class AudioSpectrogramPlotter:
         self.colorbar = self.fig.colorbar(self.mel_spec_img, ax=self.ax, format="%+2.0f dB")
         self.colorbar.set_label("Decibels (dB)")
 
-        self.ax.set(title='Mel Spectrogram')
+        self.ax.set(title='Real-Time Mel-Scaled Spectrogram')
         self.ax.set_xlabel('Time (s)')
         self.ax.set_ylabel('Frequency (Hz)')
     

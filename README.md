@@ -70,7 +70,7 @@ To run this project, install the followings:
   - [Power to Decibel Conversion](https://librosa.org/doc/main/generated/librosa.power_to_db.html)
   - [Power to Decibel Implementation](https://librosa.org/doc/main/_modules/librosa/core/spectrum.html#power_to_db)
 
-- **Thery and Implementation Examples:**
+- **Sound Event Detection Theory and Implementation Examples:**
   - [Live Spectrogram Generation](https://github.com/srrtth/Spectrogram-generator-from-live-audio/blob/main/livegram.py)
   - [Real-Time Sound Event Detection Using Spectrogram - SED During Badminton Play](https://github.com/jonnor/machinehearing/blob/master/handson/badminton/BadmintonSoundEvents.ipynb)
   - [Theory of Spectrogram and Mel Spectrogram and Visualization Using Python](https://towardsdatascience.com/getting-to-know-the-mel-spectrogram-31bca3e2d9d0)
@@ -83,6 +83,6 @@ To run this project, install the followings:
   - https://www.kaggle.com/code/darkrubiks/variational-autoencoder-with-pytorch
 
 - **ML training**
-  - [How to use Learning Curves to Diagnose Machine Learning Model Performance](How to use Learning Curves to Diagnose Machine Learning Model Performance)
+  - [How to use Learning Curves to Diagnose Machine Learning Model Performance](https://machinelearningmastery.com/learning-curves-for-diagnosing-machine-learning-model-performance/)
   - [Introduction to Deep Learning (I2DL 2023) course by Matthias Niessner] (https://www.youtube.com/watch?v=piSpPhPmPBU&list=PLQ8Y4kIIbzy_pGm2QAwF625E6nmcRu2sU&pp=iAQB)
 
