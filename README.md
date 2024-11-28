@@ -110,19 +110,24 @@ If there are problems with the python packages, check the **requirements.txt** f
 - 01_Dataset
     - Folderscontainingaudiorecordingsformodel training and the **Test Dataset** for each connector type, including noise recordings.
     - Jupyternotebooksforpreprocessingtheaudio recordings and saving the labeled datasets into the corresponding folders.
+
 - 02_Data_Augmentation
     - Jupyter notebooks for creating the augmented datasets.
     - Jupyter notebooks with the VAE model implementation for synthetic noise data generation.
     - Folders to store the augmented datasets.
+
 - 03_Click_Detection_Model
     - Jupyter notebook for model training and hyperparameter tuning.
     -  Folder containing model architectures for different channel sizes and for the two different spectrogram chunk lengths.
     - Folders to store trained weights.
+
 - 04_Detection_Model_Test
     - Jupyter notebook to simulate real-time detection and make predictions on the \textbf{Test Dataset}.
     - Folder to save test results.
+
 - 05_Click_Detection_App
     - Python app for real-time click detection during electrical connector mating using a trained model.
+    
 - 05_Utilities
     - Functions for audio processing and visualization used in multiple modules in the project.
     - Shared values used in multiple modules in the project.
