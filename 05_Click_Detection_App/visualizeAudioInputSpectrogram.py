@@ -9,26 +9,27 @@ import matplotlib.ticker as ticker
 
 class AudioSpectrogramPlotter:
     def __init__(self, click_sense, fig, ax):
-        self.click_sense = click_sense
+        self.click_sense = click_sense              ## instance of the ClickSense class
 
-        self.model = click_sense.model
-        self.detector = click_sense.detector
+        self.model = click_sense.model              ## model for click detection
+        self.detector = click_sense.detector        ## instance of the ClickDetector class
 
-        self.window_size = click_sense.window_size
+        self.window_size = click_sense.window_size  ## window size for the detection
 
-        # setup plot parameters
+        ## setup plot parameters
         self.fig = fig
         self.ax = ax
 
-        self.detection_counter = 0
+        self.detection_counter = 0      ## counter for the detection
         self.click_detected = False
         
-        # setup parameters
+        ## setup parameters
         self.setup_parameters()
         
-        # initialize the plot
+        ## initialize the plot
         self.initialize_plot()
 
+    ## function to calculate the next power of 2
     def next_power_of_2(self, x):
         next_power_of_two = 2**(math.ceil(math.log(x, 2)))
 
@@ -37,37 +38,38 @@ class AudioSpectrogramPlotter:
 
         return next_power_of_two
         
+    ## function to setup the parameters
     def setup_parameters(self):
         self.chunk_size = self.click_sense.chunk
         self.sr = self.click_sense.sampling_rate_downsampled
         self.chunk_freq = self.chunk_size / self.sr
-        self.sr = self.click_sense.sampling_rate_downsampled
 
-        # same parameters as used for dataset generation and model training
-        self.resolution = 0.016 # in seconds, resulting in 128 frames for the 2.048s plot duration
-        self.hop_length = int(self.resolution * self.click_sense.sampling_rate_downsampled) # hop_length is the number of samples between successive frames, 0.016s * 32000 1/s = 512 samples
-        self.n_fft = self.next_power_of_2(self.hop_length)
+        ## same parameters as for dataset generation and model training
+        self.resolution = 0.016                                                                 ## in seconds, resulting in 128 frames for the 2.048s plot duration
+        self.hop_length = int(self.resolution * self.click_sense.sampling_rate_downsampled)     ## hop_length is the number of samples between successive frames, 0.016s * 32000 1/s = 512 samples
+        self.n_fft = self.next_power_of_2(self.hop_length)                                      ## next power of 2 of the hop_length
 
-        self.dB_ref = 1e3 # reference value for dB conversion
-        self.a_squere_min = 1e-12 # to avoid log(0)
-        self.top_dB_abs = abs(10*np.log10(self.a_squere_min)) # maximum dB value -> 10*log(a_squere_min) = -120
+        self.d_ref = 1e3                                ## reference value for dB conversion
+        self.d_min = 1e-12                              ## to avoid log(0)
+        self.top_dB_abs = abs(10*np.log10(self.d_min))  ## maximum dB value -> 10*log(d_min) = -120
 
-        self.n_mels = 128
-        self.f_min = 20
-        self.f_max = 14000
+        self.n_mels = 128       ## number of mel bands
+        self.f_min = 20         ## minimum frequency for mel bands (from the specification of the microphone)
+        self.f_max = 14000      ## maximum frequency for mel bands
         self.mel_filter_bank = librosa.filters.mel(sr=self.sr, n_fft=self.n_fft, n_mels=self.n_mels, fmin=self.f_min, fmax=self.f_max, htk=True, norm=1)
 
         self.old_mic_input = np.zeros(self.chunk_size).astype(np.float32)
         
+    ## function to initialize the plot
     def initialize_plot(self):
-        self.chunks_per_plot = self.click_sense.chunks_per_plot
-        self.plot_update_freq = self.chunk_freq * 1000 # in ms
-        self.samples_per_plot = self.chunk_size * self.chunks_per_plot
+        self.chunks_per_plot = self.click_sense.chunks_per_plot             ## number of chunks per plot
+        self.plot_update_freq = self.chunk_freq * 1000                      ## plot update frequency in ms
+        self.samples_per_plot = self.chunk_size * self.chunks_per_plot      ## number of samples per plot
 
-        self.init_spec = np.zeros((self.n_mels, int(self.samples_per_plot / self.hop_length))) # initialize mel spectrogram
-        self.melspec_full = self.init_spec
+        self.init_spec = np.zeros((self.n_mels, int(self.samples_per_plot / self.hop_length)))  ## initialize mel spectrogram
+        self.melspec_full = self.init_spec                                                      ## full mel spectrogram
 
-        # initialize mel spectrogram plot
+        ## initialize mel spectrogram plot
         self.mel_spec_img = self.ax.pcolormesh(
             np.linspace(0, self.samples_per_plot / self.sr, self.init_spec.shape[1]),
             np.linspace(self.f_min, self.f_max, self.n_mels), 
@@ -91,71 +93,71 @@ class AudioSpectrogramPlotter:
         self.ax.set_xlabel('Time (s)')
         self.ax.set_ylabel('Frequency (Hz)')
     
-    def power_mel_to_db(self, D_mel, a_squere_min, dB_ref):
+    ## function to convert power spectrogram to dB
+    def power_mel_to_db(self, D_mel, d_min, d_ref):
 
-        D_mel_dB = 10.0 * np.log10(np.maximum(a_squere_min, np.minimum(D_mel, dB_ref)/dB_ref))
+        D_mel_dB = 10.0 * np.log10(np.maximum(d_min, np.minimum(D_mel, d_ref)/d_ref))
 
         return D_mel_dB
     
+    ## function to process the audio data
     def process_audio_data(self, signal):
         #signal = np.pad(signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
         chunk_stft = librosa.stft(signal, n_fft=self.n_fft, hop_length=self.hop_length, win_length=self.n_fft, center = True)
         D = np.abs(chunk_stft) ** 2
         D_mel = np.dot(self.mel_filter_bank, D)
-        D_mel_dB = self.power_mel_to_db(D_mel, a_squere_min=self.a_squere_min, dB_ref=self.dB_ref)
+        D_mel_dB = self.power_mel_to_db(D_mel, d_min=self.d_min, d_ref=self.d_ref)
 
         return D_mel_dB
 
+    ## function to update the spectrogram plot
     def update(self):
         new_mic_input = self.click_sense.get_mic_input()
         if new_mic_input is None:
             return
 
         mid_mic_signal = np.concatenate((self.old_mic_input[(self.chunk_size//2):], new_mic_input[:(self.chunk_size//2)]))
+        
+        ## process audio data
+        D_mel_dB_new = self.process_audio_data(new_mic_input)       ## new input
+        D_mel_dB_mid = self.process_audio_data(mid_mic_signal)      ## mid input (combination of old and new data to replace the sopectrogarm data on the edge)
 
+        new_spectrogram_chunk = np.concatenate((D_mel_dB_mid[:, 4:5], D_mel_dB_new[:, 1:8]), axis=1)    ## concatenate the mid and new data to get the full chunk
         
-        # padding
-        #new_mic_input_padded = np.pad(new_mic_input, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
-
-        #mid_mic_signal_padded = np.pad(mid_mic_signal, (self.hop_length//2, self.hop_length//2), 'constant', constant_values=(0, 0))
-        
-        
-        # process audio data
-        D_mel_dB_new = self.process_audio_data(new_mic_input)
-        D_mel_dB_mid = self.process_audio_data(mid_mic_signal)
-
-        new_spectrogram_chunk = np.concatenate((D_mel_dB_mid[:, 4:5], D_mel_dB_new[:, 1:8]), axis=1)
-        
-        # update spectrogram
+        ## update spectrogram
         self.update_spectrogram(new_spectrogram_chunk)
         
-        # perform click detection
+        ## perform click detection
         self.detection_res = self.detect_click()
 
+        ## store the old audio input data
         self.old_mic_input = new_mic_input
 
-        # return the detection result to the gui
+        ## return the detection result to the gui
         return self.detection_res
 
+    ## function to update the spectrogram
     def update_spectrogram(self, new_spectrogram_chunk):
         self.melspec_full = np.roll(self.melspec_full, -new_spectrogram_chunk.shape[1], axis=1)
         self.melspec_full[:, -new_spectrogram_chunk.shape[1]:] = new_spectrogram_chunk
         self.mel_spec_img.set_array(self.melspec_full.ravel())
 
+    ## function to detect a click
     def detect_click(self):
-        spectrogram_chunk = self.melspec_full[:, -self.window_size:] # take only the last 32 or 64 columns for detection from the fill 128 in the plot
+        spectrogram_chunk = self.melspec_full[:, -self.window_size:] ## take only the last 32 or 64 columns for detection from the fill 128 in the plot
 
+        ## skip first 4 or 8 plot updates to avoid false detections at the beginning as there is the spectrogram data from initialization
         update_without_detection = None
         if self.window_size == 32:
             update_without_detection = 4
         elif self.window_size == 64:
             update_without_detection = 8
 
-        if self.detection_counter >= update_without_detection: # wait for 4 plot updates at the beginning before starting detection
+        if self.detection_counter >= update_without_detection: ## wait for 4 plot updates at the beginning before starting detection
 
-            spectrogram_chunk_norm = self.detector.normalize_spec_chunk(spectrogram_chunk) # normalize the spectrogram chunk
-            spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm) # convert to torch tensor
-            prediction = self.detector.detection(self.model, spectrogram_chunk_tensor) # perform detection
+            spectrogram_chunk_norm = self.detector.normalize_spec_chunk(spectrogram_chunk)              ## normalize the spectrogram chunk
+            spectrogram_chunk_tensor = self.detector.convert_to_torch_tensor(spectrogram_chunk_norm)    ## convert to torch tensor
+            prediction = self.detector.detection(self.model, spectrogram_chunk_tensor)                  ## perform detection
             
             if prediction == 1:
                 self.click_detected = True

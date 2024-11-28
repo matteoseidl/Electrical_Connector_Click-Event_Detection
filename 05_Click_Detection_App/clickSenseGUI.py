@@ -19,21 +19,22 @@ class ClickDetectorGUI(QMainWindow):
         self.setup_ui()
         self.setup_audio()
         
-    # user interface setup
+    ## user interface setup
     def setup_ui(self):
         self.setWindowTitle("clickSense")
         self.setGeometry(50, 50, 1200, 800)
         
+        ## central widget for the main window
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
         
-        # buttons for strating and stopping click detection
+        ## buttons for strating and stopping click detection
         self.start_button = QPushButton("Start detection")
         self.stop_button = QPushButton("Stop detection")
         self.stop_button.setEnabled(False)
         
-        # text widgets for displaying status and click detection results
+        ## text widgets for displaying status and click detection results
         self.status_label = QLabel("Click on start button", self)
         self.detection_label = QLabel("No click detected", self)
 
@@ -42,28 +43,32 @@ class ClickDetectorGUI(QMainWindow):
         self.detection_label.setAlignment(QtCore.Qt.AlignCenter)
         self.detection_label.setStyleSheet("color: black; background-color: lightblue; border: 1px solid black;")
         
-        # plot for displaying the audio input spectrogram
+        ## plot for displaying the audio input spectrogram
         self.fig, self.ax = plt.subplots(1, 1, figsize=(14, 6))
         self.canvas = FigureCanvas(self.fig)
         
-        # add widgets to the layout
+        ## add widgets to the layout
         layout.addWidget(self.canvas)
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
         layout.addWidget(self.status_label)
         layout.addWidget(self.detection_label)
         
+        ## connect buttons to functions
         self.start_button.clicked.connect(self.start_detection)
         self.stop_button.clicked.connect(self.stop_recording)
         
+        ## timer for updating the plot
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
 
+    ## audio setup
     def setup_audio(self):
         self.click_sense = ClickSense() # initialize ClickSense object from clickSenseMain.py
         self.plotter = AudioSpectrogramPlotter(self.click_sense, self.fig, self.ax) # initialize AudioSpectrogramPlotter object from visualizeAudioInputSpectrogram.py
         self.audio_thread = None
     
+    ## start and stop detection
     def start_detection(self):
         self.audio_thread = threading.Thread(target=self.click_sense.start_recording)
         self.audio_thread.daemon = True # set to run in the backround
@@ -77,6 +82,7 @@ class ClickDetectorGUI(QMainWindow):
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
     
+    ## stop recording and plot update
     def stop_recording(self):
         if self.click_sense:
             self.click_sense.stop_recording()
@@ -87,24 +93,25 @@ class ClickDetectorGUI(QMainWindow):
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
 
-
-    # save the detection time in a csv file
+    ## save the detection time stamp in a .csv file
     def save_detection_time(self):
         with open("click_detection_times.csv", "a") as file:
             current_time = time.time()
             detection_time = datetime.fromtimestamp(current_time).strftime("%Y.%m.%d %H:%M:%S")
             file.write(f"{detection_time }\n")
     
+    ## update the plot
     def update_plot(self):
         if self.plotter:
-            self.detection_result = self.plotter.update() # return value from update method in AudioSpectrogramPlotter.py
+            self.detection_result = self.plotter.update() ## return value from update method in AudioSpectrogramPlotter.py
             print(f"detection_result: {self.detection_result}")
 
+            ## display detection result
             if self.detection_result:
                 self.detection_label.setText("Click detected")
                 self.detection_label.setStyleSheet("color: white; background-color: green; border: 1px solid black;")
 
-                # save detection time in a csv file
+                ## save detection time in a .csv file
                 self.save_detection_time()
 
             self.canvas.draw()

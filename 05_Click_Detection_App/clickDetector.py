@@ -10,8 +10,9 @@ class ClickDetector:
     def __init__(self):
         
         #self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.device = "cpu" # use cpu for real time detection
+        self.device = "cpu" ## use cpu for real-time detection
     
+    ## load model
     def load_model(self, model_architectures_dir, selected_model, model_weights_path):
         current_file_path = os.path.abspath(__file__)
         current_file_parent_dir = dirname(current_file_path)
@@ -37,28 +38,31 @@ class ClickDetector:
 
         return None
     
+    ## normalize spectrogram chunks
     def normalize_spec_chunk(self, spec_chunk):
         # min and max dB values for normalization
-        dB_min = -120
+        dB_min = -120 ## same as in the shared values
         dB_max = 0
         normalized_spec_chunk = (spec_chunk - dB_min) / (dB_max - dB_min)
 
         return normalized_spec_chunk
     
+    ## convert numpy array to torch tensor
     def convert_to_torch_tensor(self, spec_chunk):
-        spec_chunk_tensor = torch.from_numpy(spec_chunk).type(torch.float32).unsqueeze(0).unsqueeze(0) #add batch and channel dimensions
+        spec_chunk_tensor = torch.from_numpy(spec_chunk).type(torch.float32).unsqueeze(0).unsqueeze(0) ## add batch and channel dimensions
 
         return spec_chunk_tensor
     
+    ## run detection
     def detection(self, model, spec_chunk):
         model.eval()
-        binary_threshold = 0.5 # threshold for binary classification
+        binary_threshold = 0.5 ## threshold for binary classification
         with torch.inference_mode():
             model_prediction = model(spec_chunk)
             model_prediction = torch.squeeze(model_prediction)
             print(model_prediction)
         
-        binary_predictions = (model_prediction > binary_threshold).float() # binary classification based on threshold
+        binary_predictions = (model_prediction > binary_threshold).float() ## binary classification based on threshold
         print(binary_predictions)
         
         return binary_predictions
