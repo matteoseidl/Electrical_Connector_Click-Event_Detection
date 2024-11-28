@@ -142,7 +142,7 @@ class spectrogramPlotter:
         cbar_ax = fig.add_axes([0.15, -0.05, 0.7, 0.02])
         fig.colorbar(mel_spec_img, cax=cbar_ax, orientation='horizontal', format="%+2.0f dB")
 
-        ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
 
         plt.show()
     ########################################################
