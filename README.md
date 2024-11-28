@@ -51,7 +51,7 @@ The project was created using Python 3.12.5. Install it or check the installed p
     ```bash
     pip3 --version
 
-6. Install the required Python packages
+6. Install the required Python packages (packages not installed by default)
     ```bash
     pip3 install numpy matplotlib pandas scikit-learn torch torchvision torchaudio tqdm PyQt5
 
@@ -127,7 +127,7 @@ If there are problems with the python packages, check the **requirements.txt** f
 
 - 05_Click_Detection_App
     - Python app for real-time click detection during electrical connector mating using a trained model.
-    
+
 - 05_Utilities
     - Functions for audio processing and visualization used in multiple modules in the project.
     - Shared values used in multiple modules in the project.
