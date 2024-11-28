@@ -14,25 +14,26 @@ Through the supervision of **B.Sc. Máté Gábor Seidl** intellectual property o
 
 ## Installation
 
-### Dependencies
-
-To run this project, install the followings:
+To process audio input, install the following:
 
 - **PortAudio**
   ```bash
   sudo apt-get install portaudio19-dev
 
+The project was created using Python 3.12.5. Install it or check the installed python version.
+
 - **Python 3 -> check if it is installed**
   ```bash
   python3 --version
 
-### Create Python Virtual Environment (on Mac/Linux)
+### Create a Python Virtual Environment (on Mac/Linux)
+
 1. Create a project folder in a selected location and navigate into it in the terminal:
     ```bash
     mkdir <project_name>
     cd <project_name>
 
-2. Create a Python 3 virtual environment:
+2. Create a Python 3 virtual environment (with the name **venv** in this example):
     ```bash
     python3 -m venv venv
 
@@ -40,13 +41,21 @@ To run this project, install the followings:
     ```bash
     source venv/bin/activate
 
-3. Copy the project files into the project folder
+3. Copy the project files from the GitHub repository into the project folder (it can be done with *git clone* as well)
 
 4. Setup required folder structure
     ```bash
     python setup.py
 
-5. Install the required Python packages
+5. Check if pip3 installed, if not install it
+    ```bash
+    pip3 --version
+
+6. Install the required Python packages
+    ```bash
+    pip3 install numpy matplotlib pandas scikit-learn torch torchvision torchaudio tqdm PyQt5
+
+If there are problems with the python packages, check the **requirements.txt** file in the project folder containing all packages and version used in the project.
 
 ## Folder Structure
 ```
@@ -97,8 +106,26 @@ To run this project, install the followings:
     └─── spectrogramPlotting.py
 ```
 
-## Folder Content Description
-
+## Folder Content Description (according to the **Table B.1** in the thesis)
+- 01_Dataset
+    - Folderscontainingaudiorecordingsformodel training and the **Test Dataset** for each connector type, including noise recordings.
+    - Jupyternotebooksforpreprocessingtheaudio recordings and saving the labeled datasets into the corresponding folders.
+- 02_Data_Augmentation
+    - Jupyter notebooks for creating the augmented datasets.
+    - Jupyter notebooks with the VAE model implementation for synthetic noise data generation.
+    - Folders to store the augmented datasets.
+- 03_Click_Detection_Model
+    - Jupyter notebook for model training and hyperparameter tuning.
+    -  Folder containing model architectures for different channel sizes and for the two different spectrogram chunk lengths.
+    - Folders to store trained weights.
+- 04_Detection_Model_Test
+    - Jupyter notebook to simulate real-time detection and make predictions on the \textbf{Test Dataset}.
+    - Folder to save test results.
+- 05_Click_Detection_App
+    - Python app for real-time click detection during electrical connector mating using a trained model.
+- 05_Utilities
+    - Functions for audio processing and visualization used in multiple modules in the project.
+    - Shared values used in multiple modules in the project.
 
 
 ## Main References and Implementation Examples Used in the Project
