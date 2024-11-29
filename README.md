@@ -94,13 +94,11 @@ If there are problems with the python packages, check the **requirements.txt** f
     └─── 01_testResults (excluded from git)
     └─── detectionOnTestData.ipynb
 └─── 05_Click_Detection_App
-    └─── __pycache__ (excluded from git)
     └─── clickDetector.py
     └─── clickSenseGUI.py
     └─── clickSenseMain.py
     └─── visualizeAudioInputSpectrogram.py
 └─── 06_Utilities
-    └─── __pycache__ (excluded from git)
     └─── audioProcessing.py
     └─── sharedValues.py
     └─── spectrogramPlotting.py
