@@ -24,7 +24,8 @@ The project was created using Python 3.12.5. The implemented is mainly in Jupyte
 
 ### Key dependencies
   ```bash
-  pip3 install numpy matplotlib pandas scikit-learn torch torchvision torchaudio tqdm PyQt5
+    pip3 install numpy matplotlib pandas scikit-learn torch torchvision torchaudio tqdm PyQt5
+  ```
 
 If there are problems with the python packages, check the **requirements.txt** file in the project folder containing all packages and version used in the project.
 
