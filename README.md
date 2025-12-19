@@ -20,38 +20,9 @@ To process audio input, install the following:
   ```bash
   sudo apt-get install portaudio19-dev
 
-The project was created using Python 3.12.5. Install it or check the installed python version.
+The project was created using Python 3.12.5. The implemented is mainly in Jupyter notebooks chosen for the convenient output visualization capabilities.
 
-- **Python 3 -> check if it is installed**
-  ```bash
-  python3 --version
-
-### Create a Python Virtual Environment (on Mac/Linux)
-
-1. Create a project folder in a selected location and navigate into it in the terminal:
-    ```bash
-    mkdir <project_name>
-    cd <project_name>
-
-2. Create a Python 3 virtual environment (with the name **venv** in this example):
-    ```bash
-    python3 -m venv venv
-
-3. Activate the virtual environment:
-    ```bash
-    source venv/bin/activate
-
-3. Copy the project files from the GitHub repository into the project folder (it can be done with *git clone* as well)
-
-4. Setup required folder structure
-    ```bash
-    python setup.py
-
-5. Check if pip3 installed, if not install it
-    ```bash
-    pip3 --version
-
-6. Install the required Python packages (packages not installed by default)
+### Key dependencies
     ```bash
     pip3 install numpy matplotlib pandas scikit-learn torch torchvision torchaudio tqdm PyQt5
 
